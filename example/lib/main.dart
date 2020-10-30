@@ -1,3 +1,4 @@
+import 'package:example/pages/grid_view_page.dart';
 import 'package:example/pages/list_view_page.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: ListViewPage(),
+      home: GridViewPage(),
     );
   }
 }
