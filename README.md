@@ -1,11 +1,10 @@
-# paging
+# Paging
 
 A new Flutter package for paging
 
 ### DataSource
 #### PageKeyedDataSource
 *Example for load with page index*
-
 1, Define Source
 
 ```dart
@@ -42,10 +41,8 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
       ),
 ```
 #### ItemKeyedDataSource
+Coming Soon :))
 #### OffsetDataSource
+Coming Soon :))
 #### IndexDataSource
-### ItemBuilder
-### EmptyBuilder
-### ErrorBuilder
-### LoadingBuilder
-### LoadMoreBuilder
+Coming Soon :))
