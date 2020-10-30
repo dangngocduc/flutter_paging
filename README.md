@@ -8,7 +8,7 @@ A new Flutter package for paging
 
 1, Define Source
 
-```
+```dart
 class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
   NoteRepository noteRepository;
   ListViewDataSource(this.noteRepository) {
@@ -31,8 +31,8 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
 ```
 2, Implement in Widget
 
-```
-      body: paging.ListView<Note>(
+```dart
+      ListView<Note>(
         key: key,
         padding: EdgeInsets.all(16),
         itemBuilder: (context, data, child) {
