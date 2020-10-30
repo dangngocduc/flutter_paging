@@ -40,6 +40,8 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
         pageDataSource: dataSource,
       ),
 ```
+ ![](./demo/list_view.gif)
+
 #### ItemKeyedDataSource
 Coming Soon :))
 #### OffsetDataSource
