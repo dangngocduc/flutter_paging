@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'default/load_more_widget.dart';
 
 class ListView<T> extends BaseWidget<T> {
-  static const ROUTE_NAME = 'ListView';
   final widgets.EdgeInsets padding;
   final WidgetBuilder separatorBuilder;
   ListView({

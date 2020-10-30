@@ -50,4 +50,4 @@ Coming Soon :))
 
 |   |   |   |
 |---|---|---|
-|![](./demo/list_view.gif) |![](./demo/list_view.gif) |![](./demo/list_view.gif) |
+|![](./demo/list_view.gif) |![](./demo/grid_view.gif) |![](./demo/list_view.gif) |
