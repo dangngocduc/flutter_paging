@@ -28,7 +28,7 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
   }
 }
 ```
-2, Implement in Widget
+2, ListView
 
 ```dart
       ListView<Note>(
@@ -37,6 +37,23 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
         itemBuilder: (context, data, child) {
           return NoteWidget(data);
         },
+        pageDataSource: dataSource,
+      ),
+```
+
+3, GridView
+```dart
+      paging.GridView<Note>(
+        key: key,
+        padding: EdgeInsets.all(16),
+        itemBuilder: (context, data, child) {
+          return NoteGridWidget(data);
+        },
+        delegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16
+        ),
         pageDataSource: dataSource,
       ),
 ```
