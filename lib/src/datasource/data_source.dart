@@ -1,8 +1,6 @@
-import 'dart:developer' as developer;
-
 abstract class DataSource<Value> {
-  static const TAG = 'DataSource';
-
+  /// Request load page for Data Source
   Future<List<Value>> loadPage({bool isRefresh});
 
+  bool get isEndList;
 }

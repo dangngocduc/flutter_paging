@@ -1,39 +1,28 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:paging/src/datasource/data_source.dart';
+import 'package:paging/src/widgets/base_widget.dart';
 import 'package:paging/src/widgets/default/paging_default_loading.dart';
 import 'package:paging/src/widgets/paging_state.dart';
 import 'package:flutter/widgets.dart' as widgets;
-
-
-import 'builder.dart';
 import 'default/load_more_widget.dart';
 
-class ListView<T> extends StatefulWidget {
+class ListView<T> extends BaseWidget<T> {
   static const ROUTE_NAME = 'ListView';
-
-  final WidgetBuilder emptyBuilder;
-
-  final WidgetBuilder loadingBuilder;
-
-  final ErrorBuilder errorBuilder;
-
-  final ValueWidgetBuilder<T> itemBuilder;
-
-  final DataSource<T> pageDataSource;
-
-  final int pageSize;
-
-  final  EdgeInsets padding;
-
+  final widgets.EdgeInsets padding;
+  final WidgetBuilder separatorBuilder;
   ListView({
-    this.pageSize,
-    this.emptyBuilder, this.loadingBuilder, this.errorBuilder,
-    this.itemBuilder, this.pageDataSource, this.padding
-});
-
+    Key key,
+    this.padding,
+    this.separatorBuilder,
+    ValueWidgetBuilder<T> itemBuilder, DataSource<T> pageDataSource
+  }): super(
+      itemBuilder: itemBuilder,
+      pageDataSource: pageDataSource,
+      key: key
+  );
   @override
-  _ListViewState createState() => _ListViewState();
+  _ListViewState<T> createState() => _ListViewState<T>();
 }
 
 class _ListViewState<T> extends State<ListView<T>> {
@@ -42,11 +31,12 @@ class _ListViewState<T> extends State<ListView<T>> {
   PagingState<T> _pagingState = PagingState.loading();
 
   Future _loadPage({bool isRefresh = false}) async {
+    developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
     if (isRefresh == true) {
       try {
         final value = await widget.pageDataSource.loadPage(isRefresh: isRefresh);
         setState(() {
-          _pagingState = PagingState(value, false, value.length < widget.pageSize);
+          _pagingState = PagingState(value, false, widget.pageDataSource.isEndList);
         });
       } catch(error) {
         setState(() {
@@ -57,7 +47,7 @@ class _ListViewState<T> extends State<ListView<T>> {
       if (_pagingState is PagingStateLoading<T>) {
         widget.pageDataSource.loadPage().then((value) {
           setState(() {
-            _pagingState = PagingState(value, false, value.length < widget.pageSize);
+            _pagingState = PagingState(value, false, widget.pageDataSource.isEndList);
           });
         }, onError: (error) {
           setState(() {
@@ -73,7 +63,7 @@ class _ListViewState<T> extends State<ListView<T>> {
             } else {
               _pagingState = oldState.copyWith.call(
                   isLoadMore: false,
-                  isEndList: value.length <  widget.pageSize,
+                  isEndList: widget.pageDataSource.isEndList,
                   datas: oldState.datas..addAll(value)
               ) as PagingState<T>;
             }
@@ -86,6 +76,12 @@ class _ListViewState<T> extends State<ListView<T>> {
       }
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPage();
+  }
   @override
   Widget build(BuildContext context) {
     return _pagingState.when(
@@ -95,7 +91,13 @@ class _ListViewState<T> extends State<ListView<T>> {
         } else {
           Widget child = widgets.ListView.separated(
             padding: widget.padding,
-            separatorBuilder: (context, index) => SizedBox(height: 16,),
+            separatorBuilder: (context, index) {
+              if (widget.separatorBuilder != null) {
+                return widget.separatorBuilder(context);
+              } else {
+                return SizedBox(height: 16,);
+              }
+            },
             itemBuilder: (context, index) {
               if (index == datas.length) {
                 return LoadMoreWidget();
@@ -116,7 +118,8 @@ class _ListViewState<T> extends State<ListView<T>> {
                     if (!isEndList && !isLoadMore) {
                       _loadPage();
                       setState(() {
-                        _pagingState = (_pagingState as PagingStateData<T>).copyWith.call(isLoadMore: true);
+                        _pagingState = (_pagingState as PagingStateData<T>)
+                            .copyWith.call(isLoadMore: true);
                       });
                     }
                   }
@@ -132,8 +135,20 @@ class _ListViewState<T> extends State<ListView<T>> {
           );
         }
       },
-      loading: () => PagingDefaultLoading(),
-      error: (error) => ErrorWidget(error),
+      loading: ()  {
+        if (widget.loadingBuilder != null) {
+          return widget.loadingBuilder(context);
+        } else {
+          return PagingDefaultLoading();
+        }
+      },
+      error: (error) {
+        if (widget.errorBuilder != null) {
+          return widget.errorBuilder(context, error);
+        } else {
+          return ErrorWidget(error);
+        }
+      }
     );
   }
 }
