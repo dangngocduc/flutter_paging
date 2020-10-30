@@ -28,7 +28,9 @@ class NoteWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(note.title, style: Theme.of(context).textTheme.subtitle1,),
+                Text(note.title, style: Theme.of(context).textTheme.subtitle1.copyWith(
+                    fontWeight: FontWeight.w800
+                ),),
                 SizedBox(height: 4,),
                 Text(note.content, style: Theme.of(context).textTheme.bodyText2,)
               ],

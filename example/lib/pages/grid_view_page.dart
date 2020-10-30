@@ -25,12 +25,11 @@ class _GridViewPageState extends State<GridViewPage> {
   }
   @override
   Widget build(BuildContext context) {
-    developer.log('build', name: 'ListViewPage');
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Demo ListView'),
+        title: Text('Demo GridView'),
       ),
       body: paging.GridView<Note>(
         key: key,

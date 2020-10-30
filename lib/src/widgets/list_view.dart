@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:paging/src/datasource/data_source.dart';
 import 'package:paging/src/widgets/base_widget.dart';
@@ -10,10 +11,34 @@ import 'default/load_more_widget.dart';
 class ListView<T> extends BaseWidget<T> {
   final widgets.EdgeInsets padding;
   final WidgetBuilder separatorBuilder;
+  final Axis scrollDirection;
+  final bool reverse;
+  final ScrollController controller;
+  final bool primary;
+  final ScrollPhysics physics;
+  final bool shrinkWrap;
+  final bool addAutomaticKeepAlives;
+  final bool addRepaintBoundaries;
+  final bool addSemanticIndexes;
+  final double cacheExtent;
+  final DragStartBehavior dragStartBehavior;
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
   ListView({
     Key key,
     this.padding,
     this.separatorBuilder,
+    this.scrollDirection = Axis.vertical,
+    this.reverse = false,
+    this.controller,
+    this.primary,
+    this.physics,
+    this.shrinkWrap = false,
+    this.addRepaintBoundaries = true,
+    this.addAutomaticKeepAlives = true,
+    this.addSemanticIndexes = true,
+    this.cacheExtent,
+    this.dragStartBehavior = DragStartBehavior.start,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     ValueWidgetBuilder<T> itemBuilder, DataSource<T> pageDataSource
   }): super(
       itemBuilder: itemBuilder,
@@ -90,6 +115,18 @@ class _ListViewState<T> extends State<ListView<T>> {
         } else {
           Widget child = widgets.ListView.separated(
             padding: widget.padding,
+            cacheExtent: widget.cacheExtent,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            primary: widget.primary,
+            physics: widget.physics,
+            controller: widget.controller,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            dragStartBehavior: widget.dragStartBehavior,
+            shrinkWrap: widget.shrinkWrap,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
             separatorBuilder: (context, index) {
               if (widget.separatorBuilder != null) {
                 return widget.separatorBuilder(context);

@@ -1,4 +1,3 @@
-import 'package:example/pages/grid_view_page.dart';
 import 'package:example/pages/list_view_page.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey[200],
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: GridViewPage(),
+      home: ListViewPage(),
     );
   }
 }
