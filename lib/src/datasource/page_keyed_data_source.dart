@@ -20,15 +20,18 @@ abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   Future<Tuple2<List<Value>, Key>> loadPageAfter(Key params);
 
   @override
-  Future<List<Value>> loadPage({bool isRefresh}) async {
-    if (currentKey == null || isRefresh == true) {
+  Future<List<Value>> loadPage({bool isRefresh = false}) async {
+    if ((currentKey == null) || (isRefresh == true)) {
       final results = await loadInitial();
-      developer.log('loadPage results $results', name: TAG);
+      if (isRefresh) isEndList = false;
       currentKey = results.item2;
+      developer.log('loadPage done currentKey ${this.hashCode} $currentKey', name: TAG);
       return results.item1;
     } else {
+      developer.log('loadPage currentKey ${this.hashCode} $currentKey', name: TAG);
       final results = await loadPageAfter(currentKey);
       currentKey = results.item2;
+      developer.log('loadPage done currentKey ${this.hashCode} $currentKey', name: TAG);
       return results.item1;
     }
   }

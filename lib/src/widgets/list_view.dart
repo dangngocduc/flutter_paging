@@ -113,17 +113,19 @@ class _ListViewState<T> extends State<ListView<T>> {
               child: child,
               onNotification: (notification) {
                 if (notification is ScrollEndNotification) {
-                  if (isEndList) return false;
-                  if (_pagingState is PagingStateData) {
-                    if (!isEndList && !isLoadMore) {
-                      _loadPage();
-                      setState(() {
-                        _pagingState = (_pagingState as PagingStateData<T>)
-                            .copyWith.call(isLoadMore: true);
-                      });
+                  if (notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+                    if (isEndList) return false;
+                    if (_pagingState is PagingStateData) {
+                      if (!isEndList && !isLoadMore) {
+                        _loadPage();
+                        setState(() {
+                          _pagingState = (_pagingState as PagingStateData<T>)
+                              .copyWith.call(isLoadMore: true);
+                        });
+                      }
                     }
                   }
-                } else if (notification is ScrollUpdateNotification ) {
+                 } else if (notification is ScrollUpdateNotification ) {
                   //To show floating
                 }
                 return false;
