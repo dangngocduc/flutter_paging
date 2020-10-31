@@ -68,4 +68,4 @@ Coming Soon :))
 
 |   |   |   |
 |---|---|---|
-|![](./demo/list_view2.gif) |![](./demo/grid_view.gif) |![](./demo/list_view2.gif) |
+|![](./demo/list_view2.gif) |![](./demo/grid_view.gif) |![](./demo/sliver_demo.gif) |

@@ -101,7 +101,6 @@ class _GridViewState<T> extends State<GridView<T>> {
                 childCount: datas.length
               ),
             );
-
             return RefreshIndicator(
               child: NotificationListener<ScrollNotification>(
                 child: CustomScrollView(
