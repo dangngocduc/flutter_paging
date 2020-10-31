@@ -71,3 +71,14 @@ Coming Soon :))
 Coming Soon :))
 #### IndexDataSource
 Coming Soon :))
+
+# Documentation
+### BaseWidget Class
+| Dart attribute        |Description   |   Default Value |
+|:----------------------|:--------------|:----------------|
+|emptyBuilder          | builder for empty widget| |
+|loadingBuilder          | builder for loading wisdget| |
+|errorBuilder          | builder for error widget| |
+|itemBuilder          | builder for item widget| |
+|pageDataSource          | DataSource for this widget| |
+
