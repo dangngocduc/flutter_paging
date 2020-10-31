@@ -2,6 +2,13 @@
 
 A new Flutter package for paging
 
+### Demo
+
+|   |   |   |
+|---|---|---|
+|![](./demo/list_view2.gif) |![](./demo/grid_view.gif) |![](./demo/sliver_demo.gif) |
+
+
 ### DataSource
 #### PageKeyedDataSource
 *Example for load with page index*
@@ -64,8 +71,3 @@ Coming Soon :))
 Coming Soon :))
 #### IndexDataSource
 Coming Soon :))
-### Demo
-
-|   |   |   |
-|---|---|---|
-|![](./demo/list_view2.gif) |![](./demo/grid_view.gif) |![](./demo/sliver_demo.gif) |
