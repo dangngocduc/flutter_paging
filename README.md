@@ -76,9 +76,9 @@ Coming Soon :))
 ### BaseWidget Class
 | Dart attribute        |Description   |   Default Value |
 |:----------------------|:--------------|:----------------|
-|emptyBuilder          | *builder for empty widget*| |
-|loadingBuilder          | *builder for loading widget*| |
-|errorBuilder          | *builder for error widget*| |
-|itemBuilder          | *builder for item widget*| |
-|pageDataSource          | *DataSource for this widget*| |
+|`emptyBuilder`          | `builder for empty widget`| |
+|`loadingBuilder`          | `builder for loading widget`| |
+|`errorBuilder`          | `builder for error widget`| |
+|`itemBuilder`          | `builder for item widget`| |
+|`pageDataSource`          |`DataSource for this widget`| |
 
