@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:paging/src/datasource/data_source.dart';
+import 'package:fl_paging/src/datasource/data_source.dart';
 
 import 'builder.dart';
 

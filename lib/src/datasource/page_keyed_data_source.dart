@@ -1,7 +1,8 @@
 import 'dart:developer' as developer;
 
-import 'package:paging/src/datasource/data_source.dart';
 import 'package:tuple/tuple.dart';
+
+import 'data_source.dart';
 /// Key is page index, Value is type Data
 abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   static const TAG = 'PageKeyedDataSource';

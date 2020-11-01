@@ -1,10 +1,10 @@
 import 'dart:developer' as developer;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:paging/src/datasource/data_source.dart';
-import 'package:paging/src/widgets/base_widget.dart';
-import 'package:paging/src/widgets/default/paging_default_loading.dart';
-import 'package:paging/src/widgets/paging_state.dart';
+import 'package:fl_paging/src/datasource/data_source.dart';
+import 'package:fl_paging/src/widgets/base_widget.dart';
+import 'package:fl_paging/src/widgets/default/paging_default_loading.dart';
+import 'package:fl_paging/src/widgets/paging_state.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'default/load_more_widget.dart';
 
