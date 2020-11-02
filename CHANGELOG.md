@@ -9,3 +9,6 @@
 
 # 1.0.3
 -docs: Update format
+
+# 1.0.4
+-docs: Update format
