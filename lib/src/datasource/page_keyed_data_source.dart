@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:tuple/tuple.dart';
 
 import 'data_source.dart';
+
 /// Key is page index, Value is type Data
 abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   static const TAG = 'PageKeyedDataSource';
@@ -26,16 +27,17 @@ abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
       final results = await loadInitial();
       if (isRefresh) isEndList = false;
       currentKey = results.item2;
-      developer.log('loadPage done currentKey ${this.hashCode} $currentKey', name: TAG);
+      developer.log('loadPage done currentKey ${this.hashCode} $currentKey',
+          name: TAG);
       return results.item1;
     } else {
-      developer.log('loadPage currentKey ${this.hashCode} $currentKey', name: TAG);
+      developer.log('loadPage currentKey ${this.hashCode} $currentKey',
+          name: TAG);
       final results = await loadPageAfter(currentKey);
       currentKey = results.item2;
-      developer.log('loadPage done currentKey ${this.hashCode} $currentKey', name: TAG);
+      developer.log('loadPage done currentKey ${this.hashCode} $currentKey',
+          name: TAG);
       return results.item1;
     }
   }
 }
-
-

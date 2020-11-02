@@ -19,10 +19,12 @@ abstract class BaseWidget<T> extends StatefulWidget {
   /// DataSource for current ScrollView [ListView - GridView]
   final DataSource<T> pageDataSource;
 
-  BaseWidget({Key key,
-    this.emptyBuilder,
-    this.loadingBuilder,
-    this.errorBuilder,
-    @required this.itemBuilder,
-    @required this.pageDataSource}): super(key : key);
+  BaseWidget(
+      {Key key,
+      this.emptyBuilder,
+      this.loadingBuilder,
+      this.errorBuilder,
+      @required this.itemBuilder,
+      @required this.pageDataSource})
+      : super(key: key);
 }

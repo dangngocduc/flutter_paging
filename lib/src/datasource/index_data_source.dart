@@ -1,12 +1,9 @@
-
-
 class IndexDataSource {
   static const TAG = 'IndexDataSource';
   final int pageSize;
   final int initIndex;
 
-  IndexDataSource({this.pageSize, this.initIndex =  20});
-
+  IndexDataSource({this.pageSize, this.initIndex = 20});
 }
 
 class LoadParamsIndex {
