@@ -1,6 +1,6 @@
 name: fl_paging
-description: A new Flutter package for paging
-version: 1.0.1
+description: A new Flutter package support paginating for Listview, Gridview and NestedScrollView
+version: 1.0.3
 homepage: https://github.com/dangngocduc/flutter_paging
 repository: https://github.com/dangngocduc/flutter_paging
 issue_tracker: https://github.com/dangngocduc/flutter_paging/issues
@@ -13,7 +13,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  freezed_annotation: ^0.11.0+1
+  freezed_annotation: ^0.12.0
   tuple: ^1.0.3
 
 dev_dependencies:

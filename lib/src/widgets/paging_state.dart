@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'paging_state.freezed.dart';
 
 @freezed

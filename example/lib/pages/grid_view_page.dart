@@ -1,8 +1,7 @@
-import 'dart:developer' as developer;
+
 import 'package:example/data/models/note.dart';
 import 'package:example/data/note_repository.dart';
 import 'package:example/widgets/note_grid_widget.dart';
-import 'package:example/widgets/note_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:paging/paging.dart' as paging;
 

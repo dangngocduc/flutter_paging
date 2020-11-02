@@ -1,4 +1,4 @@
-import 'dart:developer' as developer;
+
 import 'package:example/data/models/note.dart';
 import 'package:flutter/material.dart';
 

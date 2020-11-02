@@ -1,4 +1,4 @@
-import 'dart:developer' as developer;
+
 import 'package:example/data/models/note.dart';
 import 'package:example/data/note_repository.dart';
 import 'package:example/pages/list_view_page.dart';

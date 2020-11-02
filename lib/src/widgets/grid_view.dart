@@ -1,7 +1,8 @@
 import 'dart:developer' as developer;
+
+import 'package:fl_paging/src/datasource/data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
-import 'package:fl_paging/src/datasource/data_source.dart';
 
 import 'base_widget.dart';
 import 'default/load_more_widget.dart';
