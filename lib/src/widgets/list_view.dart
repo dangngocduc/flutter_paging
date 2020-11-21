@@ -51,54 +51,45 @@ class ListView<T> extends BaseWidget<T> {
 
 class _ListViewState<T> extends State<ListView<T>> {
   static const TAG = 'ListView';
-
   PagingState<T> _pagingState = PagingState.loading();
+
+  void emit(PagingState state) {
+    setState(() {
+      _pagingState = state;
+    });
+  }
 
   Future _loadPage({bool isRefresh = false}) async {
     developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
     if (isRefresh == true) {
       try {
-        final value =
-            await widget.pageDataSource.loadPage(isRefresh: isRefresh);
-        setState(() {
-          _pagingState =
-              PagingState(value, false, widget.pageDataSource.isEndList);
-        });
+        emit(PagingState(
+            await widget.pageDataSource.loadPage(isRefresh: isRefresh),
+            false, widget.pageDataSource.isEndList));
       } catch (error) {
-        setState(() {
-          _pagingState = PagingState.error(error);
-        });
+        emit(PagingState.error(error));
       }
     } else {
       if (_pagingState is PagingStateLoading<T>) {
         widget.pageDataSource.loadPage().then((value) {
-          setState(() {
-            _pagingState =
-                PagingState(value, false, widget.pageDataSource.isEndList);
-          });
+          emit(PagingState(value, false, widget.pageDataSource.isEndList));
         }, onError: (error) {
-          setState(() {
-            _pagingState = PagingState.error(error);
-          });
+          emit(PagingState.error(error));
         });
       } else {
         widget.pageDataSource.loadPage().then((value) {
           final oldState = (_pagingState as PagingStateData);
-          setState(() {
             if (value.length == 0) {
-              _pagingState = oldState.copyWith
-                  .call(isLoadMore: false, isEndList: true) as PagingState<T>;
+              emit(oldState.copyWith
+                  .call(isLoadMore: false, isEndList: true));
             } else {
-              _pagingState = oldState.copyWith.call(
+              emit(oldState.copyWith.call(
                   isLoadMore: false,
                   isEndList: widget.pageDataSource.isEndList,
-                  datas: oldState.datas..addAll(value)) as PagingState<T>;
+                  datas: oldState.datas..addAll(value)));
             }
-          });
         }, onError: (error) {
-          setState(() {
-            _pagingState = PagingState.error(error);
-          });
+          emit(PagingState.error(error));
         });
       }
     }
@@ -116,6 +107,7 @@ class _ListViewState<T> extends State<ListView<T>> {
       if (datas.length == 0) {
         return widget.emptyBuilder(context);
       } else {
+        //region child
         Widget child = widgets.ListView.separated(
           padding: widget.padding,
           cacheExtent: widget.cacheExtent,
@@ -131,45 +123,24 @@ class _ListViewState<T> extends State<ListView<T>> {
           shrinkWrap: widget.shrinkWrap,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           separatorBuilder: (context, index) {
-            if (widget.separatorBuilder != null) {
-              return widget.separatorBuilder(context);
-            } else {
-              return SizedBox(
-                height: 16,
-              );
-            }
+            return widget.separatorBuilder != null ? widget.separatorBuilder(context) : const SizedBox(height: 16,);
           },
           itemBuilder: (context, index) {
-            if (index == datas.length) {
-              return LoadMoreWidget();
-            } else {
-              return widget.itemBuilder(context, datas[index], null);
-            }
+            return index == datas.length ? LoadMoreWidget() : widget.itemBuilder(context, datas[index], null);
           },
           itemCount: !isEndList ? datas.length + 1 : datas.length,
         );
-
+        //endregion
         return RefreshIndicator(
           child: NotificationListener<ScrollNotification>(
             child: child,
             onNotification: (notification) {
-              if (notification is ScrollEndNotification) {
-                if (notification.metrics.pixels ==
-                    notification.metrics.maxScrollExtent) {
-                  if (isEndList) return false;
-                  if (_pagingState is PagingStateData) {
-                    if (!isEndList && !isLoadMore) {
-                      _loadPage();
-                      setState(() {
-                        _pagingState = (_pagingState as PagingStateData<T>)
-                            .copyWith
-                            .call(isLoadMore: true);
-                      });
-                    }
+              if (!isEndList && notification is ScrollEndNotification
+                  && (notification.metrics.pixels == notification.metrics.maxScrollExtent)) {
+                  if (_pagingState is PagingStateData && (!isEndList && !isLoadMore)) {
+                    _loadPage();
+                    emit((_pagingState as PagingStateData<T>).copyWith(isLoadMore: true));
                   }
-                }
-              } else if (notification is ScrollUpdateNotification) {
-                //To show floating
               }
               return false;
             },
@@ -179,18 +150,9 @@ class _ListViewState<T> extends State<ListView<T>> {
           },
         );
       }
-    }, loading: () {
-      if (widget.loadingBuilder != null) {
-        return widget.loadingBuilder(context);
-      } else {
-        return PagingDefaultLoading();
-      }
-    }, error: (error) {
-      if (widget.errorBuilder != null) {
-        return widget.errorBuilder(context, error);
-      } else {
-        return ErrorWidget(error);
-      }
-    });
+    },
+    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder(context) : PagingDefaultLoading(),
+    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder(context, error) :  ErrorWidget(error)
+    );
   }
 }
