@@ -53,7 +53,7 @@ class _ListViewState<T> extends State<ListView<T>> {
   static const TAG = 'ListView';
   PagingState<T> _pagingState = PagingState.loading();
 
-  void emit(PagingState state) {
+  void emit(PagingState<T> state) {
     setState(() {
       _pagingState = state;
     });
@@ -63,7 +63,7 @@ class _ListViewState<T> extends State<ListView<T>> {
     developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
     if (isRefresh == true) {
       try {
-        emit(PagingState(
+        emit(PagingState<T>(
             await widget.pageDataSource.loadPage(isRefresh: isRefresh),
             false, widget.pageDataSource.isEndList));
       } catch (error) {
@@ -72,13 +72,13 @@ class _ListViewState<T> extends State<ListView<T>> {
     } else {
       if (_pagingState is PagingStateLoading<T>) {
         widget.pageDataSource.loadPage().then((value) {
-          emit(PagingState(value, false, widget.pageDataSource.isEndList));
+          emit(PagingState<T>(value, false, widget.pageDataSource.isEndList));
         }, onError: (error) {
           emit(PagingState.error(error));
         });
       } else {
         widget.pageDataSource.loadPage().then((value) {
-          final oldState = (_pagingState as PagingStateData);
+          final oldState = (_pagingState as PagingStateData<T>);
             if (value.length == 0) {
               emit(oldState.copyWith
                   .call(isLoadMore: false, isEndList: true));
@@ -137,7 +137,7 @@ class _ListViewState<T> extends State<ListView<T>> {
             onNotification: (notification) {
               if (!isEndList && notification is ScrollEndNotification
                   && (notification.metrics.pixels == notification.metrics.maxScrollExtent)) {
-                  if (_pagingState is PagingStateData && (!isEndList && !isLoadMore)) {
+                  if (_pagingState is PagingStateData<T> && (!isEndList && !isLoadMore)) {
                     _loadPage();
                     emit((_pagingState as PagingStateData<T>).copyWith(isLoadMore: true));
                   }
