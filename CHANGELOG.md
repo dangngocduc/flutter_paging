@@ -24,3 +24,9 @@
 
 # 1.0.8
 -refactor: fix bug empty config list_view.
+
+# 1.0.9
+-refactor: fix bug loadmore list_view.
+
+# 1.0.10
+-refactor: feat: add handle errorWhenLoadMore.

@@ -26,6 +26,7 @@ class ListView<T> extends BaseWidget<T> {
   final double cacheExtent;
   final DragStartBehavior dragStartBehavior;
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+  final ValueChanged errorWhenLoadMore;
   ListView(
       {Key key,
       this.padding,
@@ -41,6 +42,7 @@ class ListView<T> extends BaseWidget<T> {
       this.addSemanticIndexes = true,
       this.cacheExtent,
       this.dragStartBehavior = DragStartBehavior.start,
+      this.errorWhenLoadMore,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       ValueWidgetBuilder<T> itemBuilder,
         WidgetBuilder emptyBuilder,
@@ -62,9 +64,11 @@ class _ListViewState<T> extends State<ListView<T>> {
   PagingState<T> _pagingState = PagingState.loading();
 
   void emit(PagingState<T> state) {
-    setState(() {
-      _pagingState = state;
-    });
+    if (mounted) {
+      setState(() {
+        _pagingState = state;
+      });
+    }
   }
 
   Future _loadPage({bool isRefresh = false}) async {
@@ -97,7 +101,11 @@ class _ListViewState<T> extends State<ListView<T>> {
                   datas: oldState.datas..addAll(value)));
             }
         }, onError: (error) {
-          emit(PagingState.error(error));
+          if (widget.errorWhenLoadMore != null) {
+            widget.errorWhenLoadMore(error);
+          } else {
+            emit(PagingState.error(error));
+          }
         });
       }
     }
