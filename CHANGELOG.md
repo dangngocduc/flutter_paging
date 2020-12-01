@@ -18,3 +18,9 @@
 
 # 1.0.6
 -refactor: refactor list_view code.
+
+# 1.0.7
+-refactor: refactor list_view code.
+
+# 1.0.8
+-refactor: fix bug empty config list_view.

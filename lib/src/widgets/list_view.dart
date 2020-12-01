@@ -8,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
+import 'builder.dart';
 import 'default/load_more_widget.dart';
 
 class ListView<T> extends BaseWidget<T> {
@@ -42,9 +43,16 @@ class ListView<T> extends BaseWidget<T> {
       this.dragStartBehavior = DragStartBehavior.start,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
       ValueWidgetBuilder<T> itemBuilder,
+        WidgetBuilder emptyBuilder,
+        WidgetBuilder loadingBuilder,
+        ErrorBuilder  errorBuilder,
       DataSource<T> pageDataSource})
       : super(
-            itemBuilder: itemBuilder, pageDataSource: pageDataSource, key: key);
+            itemBuilder: itemBuilder,
+      emptyBuilder: emptyBuilder,
+      loadingBuilder: loadingBuilder,
+      errorBuilder: errorBuilder,
+      pageDataSource: pageDataSource, key: key);
   @override
   _ListViewState<T> createState() => _ListViewState<T>();
 }
