@@ -18,7 +18,7 @@
 </p>
 
 ---
-A new Flutter package for paging
+A Flutter package that supports pagination(load infinite) for ListView, GridView
 
 ### Demo
 
