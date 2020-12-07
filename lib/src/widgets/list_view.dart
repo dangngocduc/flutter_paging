@@ -56,12 +56,14 @@ class ListView<T> extends BaseWidget<T> {
       errorBuilder: errorBuilder,
       pageDataSource: pageDataSource, key: key);
   @override
-  _ListViewState<T> createState() => _ListViewState<T>();
+  ListViewState<T> createState() => ListViewState<T>();
 }
 
-class _ListViewState<T> extends State<ListView<T>> {
+class ListViewState<T> extends State<ListView<T>> {
   static const TAG = 'ListView';
   PagingState<T> _pagingState = PagingState.loading();
+
+  PagingState<T> get pagingState => _pagingState;
 
   void emit(PagingState<T> state) {
     if (mounted) {
@@ -69,6 +71,10 @@ class _ListViewState<T> extends State<ListView<T>> {
         _pagingState = state;
       });
     }
+  }
+
+  void retry() {
+    _loadPage(isRefresh: false);
   }
 
   Future _loadPage({bool isRefresh = false}) async {
@@ -89,8 +95,12 @@ class _ListViewState<T> extends State<ListView<T>> {
           emit(PagingState.error(error));
         });
       } else {
+        if(_pagingState is PagingStateError<T>) {
+          emit(PagingState.loading());
+        }
         widget.pageDataSource.loadPage().then((value) {
-          final oldState = (_pagingState as PagingStateData<T>);
+          if (_pagingState is PagingStateData<T>) {
+            final oldState = (_pagingState as PagingStateData<T>);
             if (value.length == 0) {
               emit(oldState.copyWith
                   .call(isLoadMore: false, isEndList: true));
@@ -100,6 +110,10 @@ class _ListViewState<T> extends State<ListView<T>> {
                   isEndList: widget.pageDataSource.isEndList,
                   datas: oldState.datas..addAll(value)));
             }
+          } else {
+            emit(PagingState<T>(value, false, widget.pageDataSource.isEndList));
+          }
+
         }, onError: (error) {
           if (widget.errorWhenLoadMore != null) {
             widget.errorWhenLoadMore(error);

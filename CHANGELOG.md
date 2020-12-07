@@ -30,3 +30,13 @@
 
 # 1.0.10
 -refactor: feat: add handle errorWhenLoadMore.
+
+
+# 1.0.11
+-refactor: feat: add handle retry when errror.
+
+# 1.0.12
+-refactor: feat: add handle retry when errror.
+
+# 1.0.13
+-refactor: feat: get state of ListView
