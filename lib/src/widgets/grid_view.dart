@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
 import 'base_widget.dart';
+import 'builder.dart';
 import 'default/load_more_widget.dart';
 import 'default/paging_default_loading.dart';
 import 'paging_state.dart';
@@ -18,15 +19,19 @@ class GridView<T> extends BaseWidget<T> {
       this.padding,
       this.delegate,
         ValueIndexWidgetBuilder<T> itemBuilder,
+        WidgetBuilder emptyBuilder,
+        WidgetBuilder loadingBuilder,
+        ErrorBuilder  errorBuilder,
       DataSource<T> pageDataSource})
       : super(
-            itemBuilder: itemBuilder, pageDataSource: pageDataSource, key: key);
+            itemBuilder: itemBuilder, pageDataSource: pageDataSource, key: key,
+      emptyBuilder: emptyBuilder, loadingBuilder: loadingBuilder, errorBuilder: errorBuilder);
 
   @override
-  _GridViewState<T> createState() => _GridViewState<T>();
+  GridViewState<T> createState() => GridViewState<T>();
 }
 
-class _GridViewState<T> extends State<GridView<T>> {
+class GridViewState<T> extends State<GridView<T>> {
   static const TAG = 'GridView';
 
   PagingState<T> _pagingState = PagingState.loading();
@@ -85,6 +90,14 @@ class _GridViewState<T> extends State<GridView<T>> {
   void initState() {
     super.initState();
     _loadPage();
+  }
+
+  void retry() {
+    _loadPage();
+  }
+
+  void refresh() {
+    _loadPage(isRefresh: true);
   }
 
   @override
