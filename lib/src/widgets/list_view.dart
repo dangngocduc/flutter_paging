@@ -6,14 +6,14 @@ import 'package:fl_paging/src/widgets/default/paging_default_loading.dart';
 import 'package:fl_paging/src/widgets/paging_state.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:async/async.dart';
 import 'package:flutter/widgets.dart' as widgets;
-
 import 'builder.dart';
 import 'default/load_more_widget.dart';
 
 class ListView<T> extends BaseWidget<T> {
   final widgets.EdgeInsets padding;
-  final WidgetBuilder separatorBuilder;
+  final IndexedWidgetBuilder separatorBuilder;
   final Axis scrollDirection;
   final bool reverse;
   final ScrollController controller;
@@ -44,7 +44,7 @@ class ListView<T> extends BaseWidget<T> {
       this.dragStartBehavior = DragStartBehavior.start,
       this.errorWhenLoadMore,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-      ValueWidgetBuilder<T> itemBuilder,
+        ValueIndexWidgetBuilder<T> itemBuilder,
         WidgetBuilder emptyBuilder,
         WidgetBuilder loadingBuilder,
         ErrorBuilder  errorBuilder,
@@ -61,12 +61,27 @@ class ListView<T> extends BaseWidget<T> {
 
 class ListViewState<T> extends State<ListView<T>> {
   static const TAG = 'ListView';
+  CancelableOperation cancelableOperation;
   PagingState<T> _pagingState = PagingState.loading();
-
   PagingState<T> get pagingState => _pagingState;
+
+  List<T> getData() {
+    if (_pagingState is PagingStateData) {
+      return (_pagingState as PagingStateData).datas;
+    } else {
+      return [];
+    }
+  }
+
+  @override
+  void dispose() {
+    cancelableOperation?.cancel();
+    super.dispose();
+  }
 
   void emit(PagingState<T> state) {
     if (mounted) {
+      developer.log('emit state ${state}', name: 'ListView');
       setState(() {
         _pagingState = state;
       });
@@ -77,8 +92,12 @@ class ListViewState<T> extends State<ListView<T>> {
     _loadPage(isRefresh: false);
   }
 
+
   Future _loadPage({bool isRefresh = false}) async {
     developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
+    if (cancelableOperation != null && !cancelableOperation.isCompleted) {
+      cancelableOperation.cancel();
+    }
     if (isRefresh == true) {
       try {
         emit(PagingState<T>(
@@ -89,7 +108,8 @@ class ListViewState<T> extends State<ListView<T>> {
       }
     } else {
       if (_pagingState is PagingStateLoading<T>) {
-        widget.pageDataSource.loadPage().then((value) {
+        cancelableOperation = CancelableOperation.fromFuture(widget.pageDataSource.loadPage());
+        cancelableOperation.value.then((value) {
           emit(PagingState<T>(value, false, widget.pageDataSource.isEndList));
         }, onError: (error) {
           emit(PagingState.error(error));
@@ -98,7 +118,8 @@ class ListViewState<T> extends State<ListView<T>> {
         if(_pagingState is PagingStateError<T>) {
           emit(PagingState.loading());
         }
-        widget.pageDataSource.loadPage().then((value) {
+        cancelableOperation = CancelableOperation.fromFuture(widget.pageDataSource.loadPage());
+        cancelableOperation.value.then((value) {
           if (_pagingState is PagingStateData<T>) {
             final oldState = (_pagingState as PagingStateData<T>);
             if (value.length == 0) {
@@ -153,10 +174,10 @@ class ListViewState<T> extends State<ListView<T>> {
           shrinkWrap: widget.shrinkWrap,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           separatorBuilder: (context, index) {
-            return widget.separatorBuilder != null ? widget.separatorBuilder(context) : const SizedBox(height: 16,);
+            return widget.separatorBuilder != null ? widget.separatorBuilder(context, index) : const SizedBox(height: 16,);
           },
           itemBuilder: (context, index) {
-            return index == datas.length ? LoadMoreWidget() : widget.itemBuilder(context, datas[index], null);
+            return index == datas.length ? LoadMoreWidget() : widget.itemBuilder(context, datas[index], index);
           },
           itemCount: !isEndList ? datas.length + 1 : datas.length,
         );

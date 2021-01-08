@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'builder.dart';
 
+typedef ValueIndexWidgetBuilder<T> = Widget Function(BuildContext context, T value, int index);
+
 abstract class BaseWidget<T> extends StatefulWidget {
   /// Signature for a function that creates a widget empty
   final WidgetBuilder emptyBuilder;
@@ -14,7 +16,7 @@ abstract class BaseWidget<T> extends StatefulWidget {
   final ErrorBuilder errorBuilder;
 
   /// Signature for a function that creates a widget for item
-  final ValueWidgetBuilder<T> itemBuilder;
+  final ValueIndexWidgetBuilder<T> itemBuilder;
 
   /// DataSource for current ScrollView [ListView - GridView]
   final DataSource<T> pageDataSource;

@@ -25,7 +25,6 @@ abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   Future<List<Value>> loadPage({bool isRefresh = false}) async {
     if ((currentKey == null) || (isRefresh == true)) {
       final results = await loadInitial();
-      if (isRefresh) isEndList = false;
       currentKey = results.item2;
       developer.log('loadPage done currentKey ${this.hashCode} $currentKey',
           name: TAG);

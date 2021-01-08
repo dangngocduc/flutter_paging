@@ -17,7 +17,7 @@ class GridView<T> extends BaseWidget<T> {
       {Key key,
       this.padding,
       this.delegate,
-      ValueWidgetBuilder<T> itemBuilder,
+        ValueIndexWidgetBuilder<T> itemBuilder,
       DataSource<T> pageDataSource})
       : super(
             itemBuilder: itemBuilder, pageDataSource: pageDataSource, key: key);

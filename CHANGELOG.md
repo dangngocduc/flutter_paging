@@ -40,3 +40,9 @@
 
 # 1.0.13
 -refactor: feat: get state of ListView
+
+# 1.0.14
+-refactor: fixbug: fixbug loadmore
+
+# 1.0.15
+-refactor: feat: add index for itembuilder and separatorBuilder
