@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:fl_paging/src/datasource/data_source.dart';
+import 'package:fl_paging/src/widgets/builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
@@ -18,9 +19,16 @@ class GridView<T> extends BaseWidget<T> {
       this.padding,
       this.delegate,
         ValueIndexWidgetBuilder<T> itemBuilder,
+        WidgetBuilder emptyBuilder,
+        WidgetBuilder loadingBuilder,
+        ErrorBuilder  errorBuilder,
       DataSource<T> pageDataSource})
       : super(
-            itemBuilder: itemBuilder, pageDataSource: pageDataSource, key: key);
+            itemBuilder: itemBuilder,
+      emptyBuilder: emptyBuilder,
+      loadingBuilder: loadingBuilder,
+      errorBuilder: errorBuilder,
+      pageDataSource: pageDataSource, key: key);
 
   @override
   _GridViewState<T> createState() => _GridViewState<T>();
@@ -91,7 +99,11 @@ class _GridViewState<T> extends State<GridView<T>> {
   Widget build(BuildContext context) {
     return _pagingState.when((datas, isLoadMore, isEndList) {
       if (datas.length == 0) {
-        return widget.emptyBuilder(context);
+        if (widget.emptyBuilder != null) {
+          return widget.emptyBuilder(context);
+        } else {
+          return Container();
+        }
       } else {
         Widget child = widgets.SliverGrid(
           gridDelegate: widget.delegate,
