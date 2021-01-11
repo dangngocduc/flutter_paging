@@ -31,13 +31,17 @@ class GridView<T> extends BaseWidget<T> {
       pageDataSource: pageDataSource, key: key);
 
   @override
-  _GridViewState<T> createState() => _GridViewState<T>();
+  GridViewState<T> createState() => GridViewState<T>();
 }
 
-class _GridViewState<T> extends State<GridView<T>> {
+class GridViewState<T> extends State<GridView<T>> {
   static const TAG = 'GridView';
 
   PagingState<T> _pagingState = PagingState.loading();
+
+  void retry() {
+    _loadPage(isRefresh: false);
+  }
 
   Future _loadPage({bool isRefresh = false}) async {
     developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
@@ -67,6 +71,11 @@ class _GridViewState<T> extends State<GridView<T>> {
           });
         });
       } else {
+        if(_pagingState is PagingStateError<T>) {
+          setState(() {
+            PagingState.loading();
+          });;
+        }
         widget.pageDataSource.loadPage().then((value) {
           final oldState = (_pagingState as PagingStateData);
           setState(() {

@@ -49,3 +49,6 @@
 
 # 1.0.16
 -refactor: feat add GridView builder
+
+# 1.0.17
+-refactor: feat handle retry GridView
