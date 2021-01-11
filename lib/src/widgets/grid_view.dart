@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
 import 'base_widget.dart';
+import 'builder.dart';
 import 'default/load_more_widget.dart';
 import 'default/paging_default_loading.dart';
 import 'paging_state.dart';
@@ -102,6 +103,14 @@ class GridViewState<T> extends State<GridView<T>> {
   void initState() {
     super.initState();
     _loadPage();
+  }
+
+  void retry() {
+    _loadPage();
+  }
+
+  void refresh() {
+    _loadPage(isRefresh: true);
   }
 
   @override
