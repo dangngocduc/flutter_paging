@@ -46,3 +46,9 @@
 
 # 1.0.15
 -refactor: feat: add index for itembuilder and separatorBuilder
+
+# 1.0.16
+-refactor: feat add GridView builder
+
+# 1.0.17
+-refactor: feat handle retry GridView
