@@ -105,10 +105,6 @@ class GridViewState<T> extends State<GridView<T>> {
     _loadPage();
   }
 
-  void retry() {
-    _loadPage();
-  }
-
   void refresh() {
     _loadPage(isRefresh: true);
   }
