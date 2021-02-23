@@ -73,8 +73,8 @@ class GridViewState<T> extends State<GridView<T>> {
       } else {
         if(_pagingState is PagingStateError<T>) {
           setState(() {
-            PagingState.loading();
-          });;
+            _pagingState = PagingState.loading();
+          });
         }
         widget.pageDataSource.loadPage().then((value) {
           final oldState = (_pagingState as PagingStateData);
@@ -105,6 +105,20 @@ class GridViewState<T> extends State<GridView<T>> {
   }
 
   @override
+  void didUpdateWidget(GridView<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.delegate is SliverGridDelegateWithFixedCrossAxisCount
+        && oldWidget.delegate is SliverGridDelegateWithFixedCrossAxisCount) {
+      if ((widget.delegate as SliverGridDelegateWithFixedCrossAxisCount).childAspectRatio !=
+          (oldWidget.delegate as SliverGridDelegateWithFixedCrossAxisCount).childAspectRatio) {
+        setState(() {
+
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _pagingState.when((datas, isLoadMore, isEndList) {
       if (datas.length == 0) {
@@ -117,7 +131,7 @@ class GridViewState<T> extends State<GridView<T>> {
         Widget child = widgets.SliverGrid(
           gridDelegate: widget.delegate,
           delegate: SliverChildBuilderDelegate((context, index) {
-            return widget.itemBuilder(context, datas[index], null);
+            return widget.itemBuilder(context, datas[index], index);
           }, childCount: datas.length),
         );
         return RefreshIndicator(

@@ -52,3 +52,17 @@
 
 # 1.0.17
 -refactor: feat handle retry GridView
+
+
+# 1.0.18
+-fixbug: fix bug loading when retry on GridView
+
+# 1.0.19
+-feature: reize item gridview
+
+# 1.0.20
+-fixbug: fix bug duplicate when loadmore +  pull to refresh
+
+
+# 1.0.21
+-feat: update index gridView
