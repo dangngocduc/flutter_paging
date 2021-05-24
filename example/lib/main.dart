@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:example/pages/list_view_page.dart';
 import 'package:example/widgets/note_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:paging/paging.dart' as paging;
+import 'package:fl_paging/fl_paging.dart' as paging;
 
 import 'data/models/note.dart';
 import 'data/note_repository.dart';
@@ -36,7 +36,7 @@ class ListViewPage extends StatefulWidget {
 class _ListViewPageState extends State<ListViewPage> {
   static const TAG = 'ListViewPage';
   final GlobalKey key = GlobalKey();
-  ListViewDataSource dataSource;
+  late ListViewDataSource dataSource;
   @override
   void initState() {
     super.initState();

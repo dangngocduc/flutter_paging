@@ -1,8 +1,7 @@
-import 'package:example/data/models/note.dart';
-import 'package:example/data/note_repository.dart';
-import 'package:paging/paging.dart' as paging;
+import '../data/models/note.dart';
+import '../data/note_repository.dart';
 import 'package:tuple/tuple.dart';
-
+import 'package:fl_paging/fl_paging.dart' as paging;
 class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
   NoteRepository noteRepository;
   ListViewDataSource(this.noteRepository) {

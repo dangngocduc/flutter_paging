@@ -1,6 +1,4 @@
-
-
-class Note {   
+class Note {
   static const TAG = 'Note';
   
   int id;

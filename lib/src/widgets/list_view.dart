@@ -13,23 +13,23 @@ import 'default/load_more_widget.dart';
 
 class ListView<T> extends BaseWidget<T> {
   final widgets.EdgeInsets padding;
-  final IndexedWidgetBuilder separatorBuilder;
+  final IndexedWidgetBuilder? separatorBuilder;
   final Axis scrollDirection;
   final bool reverse;
-  final ScrollController controller;
-  final bool primary;
-  final ScrollPhysics physics;
+  final ScrollController? controller;
+  final bool? primary;
+  final ScrollPhysics? physics;
   final bool shrinkWrap;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
   final bool addSemanticIndexes;
-  final double cacheExtent;
+  final double? cacheExtent;
   final DragStartBehavior dragStartBehavior;
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
-  final ValueChanged errorWhenLoadMore;
+  final ValueChanged? errorWhenLoadMore;
   ListView(
-      {Key key,
-      this.padding,
+      {Key? key,
+      this.padding = EdgeInsets.zero,
       this.separatorBuilder,
       this.scrollDirection = Axis.vertical,
       this.reverse = false,
@@ -44,11 +44,11 @@ class ListView<T> extends BaseWidget<T> {
       this.dragStartBehavior = DragStartBehavior.start,
       this.errorWhenLoadMore,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
-        ValueIndexWidgetBuilder<T> itemBuilder,
-        WidgetBuilder emptyBuilder,
-        WidgetBuilder loadingBuilder,
-        ErrorBuilder  errorBuilder,
-      DataSource<T> pageDataSource})
+        required ValueIndexWidgetBuilder<T> itemBuilder,
+        WidgetBuilder? emptyBuilder,
+        WidgetBuilder? loadingBuilder,
+        ErrorBuilder?  errorBuilder,
+      required DataSource<T> pageDataSource})
       : super(
             itemBuilder: itemBuilder,
       emptyBuilder: emptyBuilder,
@@ -61,16 +61,14 @@ class ListView<T> extends BaseWidget<T> {
 
 class ListViewState<T> extends State<ListView<T>> {
   static const TAG = 'ListView';
-  CancelableOperation cancelableOperation;
+  CancelableOperation? cancelableOperation;
   PagingState<T> _pagingState = PagingState.loading();
   PagingState<T> get pagingState => _pagingState;
 
   List<T> getData() {
-    if (_pagingState is PagingStateData) {
-      return (_pagingState as PagingStateData).datas;
-    } else {
-      return [];
-    }
+    return _pagingState.maybeWhen(
+            (datas, isLoadMore, isEndList) => datas,
+        orElse: () => []);
   }
 
   @override
@@ -95,8 +93,8 @@ class ListViewState<T> extends State<ListView<T>> {
 
   Future _loadPage({bool isRefresh = false}) async {
     developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
-    if (cancelableOperation != null && !cancelableOperation.isCompleted) {
-      cancelableOperation.cancel();
+    if (cancelableOperation != null && !cancelableOperation!.isCompleted) {
+      cancelableOperation!.cancel();
     }
     if (isRefresh == true) {
       try {
@@ -109,7 +107,7 @@ class ListViewState<T> extends State<ListView<T>> {
     } else {
       if (_pagingState is PagingStateLoading<T>) {
         cancelableOperation = CancelableOperation.fromFuture(widget.pageDataSource.loadPage());
-        cancelableOperation.value.then((value) {
+        cancelableOperation!.value.then((value) {
           emit(PagingState<T>(value, false, widget.pageDataSource.isEndList));
         }, onError: (error) {
           emit(PagingState.error(error));
@@ -119,7 +117,7 @@ class ListViewState<T> extends State<ListView<T>> {
           emit(PagingState.loading());
         }
         cancelableOperation = CancelableOperation.fromFuture(widget.pageDataSource.loadPage());
-        cancelableOperation.value.then((value) {
+        cancelableOperation!.value.then((value) {
           if (_pagingState is PagingStateData<T>) {
             final oldState = (_pagingState as PagingStateData<T>);
             if (value.length == 0) {
@@ -137,7 +135,7 @@ class ListViewState<T> extends State<ListView<T>> {
 
         }, onError: (error) {
           if (widget.errorWhenLoadMore != null) {
-            widget.errorWhenLoadMore(error);
+            widget.errorWhenLoadMore!(error);
           } else {
             emit(PagingState.error(error));
           }
@@ -156,7 +154,7 @@ class ListViewState<T> extends State<ListView<T>> {
   Widget build(BuildContext context) {
     return _pagingState.when((datas, isLoadMore, isEndList) {
       if (datas.length == 0) {
-        return widget.emptyBuilder(context);
+        return widget.emptyBuilder!(context);
       } else {
         //region child
         Widget child = widgets.ListView.separated(
@@ -174,7 +172,7 @@ class ListViewState<T> extends State<ListView<T>> {
           shrinkWrap: widget.shrinkWrap,
           keyboardDismissBehavior: widget.keyboardDismissBehavior,
           separatorBuilder: (context, index) {
-            return widget.separatorBuilder != null ? widget.separatorBuilder(context, index) : const SizedBox(height: 16,);
+            return widget.separatorBuilder != null ? widget.separatorBuilder!(context, index) : const SizedBox(height: 16,);
           },
           itemBuilder: (context, index) {
             return index == datas.length ? LoadMoreWidget() : widget.itemBuilder(context, datas[index], index);
@@ -202,8 +200,8 @@ class ListViewState<T> extends State<ListView<T>> {
         );
       }
     },
-    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder(context) : PagingDefaultLoading(),
-    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder(context, error) :  ErrorWidget(error)
+    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder!(context) : PagingDefaultLoading(),
+    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder!(context, error) :  ErrorWidget(error)
     );
   }
 }

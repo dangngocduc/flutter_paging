@@ -66,3 +66,6 @@
 
 # 1.0.21
 -feat: update index gridView
+
+# 2.0.0
+- support null safety

@@ -1,4 +1,3 @@
-
 import 'package:example/data/models/note.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +19,7 @@ class NoteGridWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(note.title, style: Theme.of(context).textTheme.subtitle1.copyWith(
+          Text(note.title, style: Theme.of(context).textTheme.subtitle1!.copyWith(
             fontWeight: FontWeight.w800
           ),),
           SizedBox(height: 12,),

@@ -7,13 +7,13 @@ typedef ValueIndexWidgetBuilder<T> = Widget Function(BuildContext context, T val
 
 abstract class BaseWidget<T> extends StatefulWidget {
   /// Signature for a function that creates a widget empty
-  final WidgetBuilder emptyBuilder;
+  final WidgetBuilder? emptyBuilder;
 
   /// Signature for a function that creates a widget loading
-  final WidgetBuilder loadingBuilder;
+  final WidgetBuilder? loadingBuilder;
 
   /// Signature for a function that creates a widget Error
-  final ErrorBuilder errorBuilder;
+  final ErrorBuilder? errorBuilder;
 
   /// Signature for a function that creates a widget for item
   final ValueIndexWidgetBuilder<T> itemBuilder;
@@ -22,11 +22,11 @@ abstract class BaseWidget<T> extends StatefulWidget {
   final DataSource<T> pageDataSource;
 
   BaseWidget(
-      {Key key,
+      {Key? key,
       this.emptyBuilder,
       this.loadingBuilder,
       this.errorBuilder,
-      @required this.itemBuilder,
-      @required this.pageDataSource})
+      required this.itemBuilder,
+      required this.pageDataSource})
       : super(key: key);
 }

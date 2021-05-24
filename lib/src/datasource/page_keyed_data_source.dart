@@ -1,5 +1,3 @@
-import 'dart:developer' as developer;
-
 import 'package:tuple/tuple.dart';
 
 import 'data_source.dart';
@@ -9,13 +7,13 @@ abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   static const TAG = 'PageKeyedDataSource';
 
   /// Current Key of page loaded success
-  Key currentKey;
+  Key? currentKey;
 
   /// true if data source is loaded all data
   /// false if data source is not loaded all data
-  bool isEndList;
+  late bool isEndList;
 
-  CancelableOperation<Tuple2<List<Value>, Key>> _cancelableOperation;
+  CancelableOperation<Tuple2<List<Value>, Key>>? _cancelableOperation;
 
   /// Load for first time
   Future<Tuple2<List<Value>, Key>> loadInitial();
@@ -26,17 +24,17 @@ abstract class PageKeyedDataSource<Key, Value> extends DataSource<Value> {
   @override
   Future<List<Value>> loadPage({bool isRefresh = false}) async {
     if ((currentKey == null) || (isRefresh == true)) {
-      if (_cancelableOperation != null && !_cancelableOperation.isCompleted)
-        _cancelableOperation.cancel();
+      if (_cancelableOperation != null && !_cancelableOperation!.isCompleted)
+        _cancelableOperation!.cancel();
       _cancelableOperation = CancelableOperation.fromFuture(loadInitial());
-      final results = await _cancelableOperation.valueOrCancellation();
+      final results = await _cancelableOperation!.valueOrCancellation();
       currentKey = results?.item2;
-      return results?.item1;
+      return results?.item1 ?? [];
     } else {
-      _cancelableOperation =  CancelableOperation.fromFuture(loadPageAfter(currentKey));
-      final results = await _cancelableOperation.valueOrCancellation();
+      _cancelableOperation =  CancelableOperation.fromFuture(loadPageAfter(currentKey!));
+      final results = await _cancelableOperation!.valueOrCancellation();
       currentKey = results?.item2;
-      return results?.item1;
+      return results?.item1 ?? [];
     }
   }
 }

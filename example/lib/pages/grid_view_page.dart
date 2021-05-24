@@ -1,10 +1,9 @@
 
-import 'package:example/data/models/note.dart';
-import 'package:example/data/note_repository.dart';
-import 'package:example/widgets/note_grid_widget.dart';
+import '../data/models/note.dart';
+import '../data/note_repository.dart';
+import '../widgets/note_grid_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:paging/paging.dart' as paging;
-
+import 'package:fl_paging/fl_paging.dart' as paging;
 import 'list_view_page.dart';
 
 class GridViewPage extends StatefulWidget {
@@ -16,7 +15,7 @@ class GridViewPage extends StatefulWidget {
 class _GridViewPageState extends State<GridViewPage> {
   static const TAG = 'GridViewPage';
   final GlobalKey key = GlobalKey();
-  ListViewDataSource dataSource;
+  late ListViewDataSource dataSource;
   @override
   void initState() {
     super.initState();
@@ -31,6 +30,9 @@ class _GridViewPageState extends State<GridViewPage> {
         title: Text('Demo GridView'),
       ),
       body: paging.GridView<Note>(
+        emptyBuilder: (context) {
+          return Container();
+        },
         key: key,
         padding: EdgeInsets.all(16),
         itemBuilder: (context, data, child) {

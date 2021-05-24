@@ -13,17 +13,17 @@ import 'paging_state.dart';
 
 class GridView<T> extends BaseWidget<T> {
   static const ROUTE_NAME = 'GridView';
-  final widgets.EdgeInsets padding;
+  final widgets.EdgeInsets? padding;
   final SliverGridDelegate delegate;
   GridView(
-      {Key key,
+      {Key? key,
       this.padding,
-      this.delegate,
-        ValueIndexWidgetBuilder<T> itemBuilder,
-        WidgetBuilder emptyBuilder,
-        WidgetBuilder loadingBuilder,
-        ErrorBuilder  errorBuilder,
-      DataSource<T> pageDataSource})
+      required this.delegate,
+        required ValueIndexWidgetBuilder<T> itemBuilder,
+        WidgetBuilder? emptyBuilder,
+        WidgetBuilder? loadingBuilder,
+        ErrorBuilder?  errorBuilder,
+        required DataSource<T> pageDataSource})
       : super(
             itemBuilder: itemBuilder,
       emptyBuilder: emptyBuilder,
@@ -128,7 +128,7 @@ class GridViewState<T> extends State<GridView<T>> {
     return _pagingState.when((datas, isLoadMore, isEndList) {
       if (datas.length == 0) {
         if (widget.emptyBuilder != null) {
-          return widget.emptyBuilder(context);
+          return widget.emptyBuilder!(context);
         } else {
           return Container();
         }
@@ -144,7 +144,7 @@ class GridViewState<T> extends State<GridView<T>> {
             child: CustomScrollView(
               slivers: [
                 widgets.SliverPadding(
-                  padding: widget.padding,
+                  padding: widget.padding ?? EdgeInsets.zero,
                   sliver: child,
                 ),
                 if (!isEndList)
@@ -182,13 +182,13 @@ class GridViewState<T> extends State<GridView<T>> {
       }
     }, loading: () {
       if (widget.loadingBuilder != null) {
-        return widget.loadingBuilder(context);
+        return widget.loadingBuilder!(context);
       } else {
         return PagingDefaultLoading();
       }
     }, error: (error) {
       if (widget.errorBuilder != null) {
-        return widget.errorBuilder(context, error);
+        return widget.errorBuilder!(context, error);
       } else {
         return ErrorWidget(error);
       }

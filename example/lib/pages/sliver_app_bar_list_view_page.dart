@@ -4,7 +4,7 @@ import 'package:example/data/note_repository.dart';
 import 'package:example/pages/list_view_page.dart';
 import 'package:example/widgets/note_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:paging/paging.dart' as paging;
+import 'package:fl_paging/fl_paging.dart' as paging;
 
 class SliverAppBarListViewPage extends StatefulWidget {
   static const ROUTE_NAME = 'SliverAppBarListViewPage';
@@ -14,7 +14,7 @@ class SliverAppBarListViewPage extends StatefulWidget {
 
 class _SliverAppBarListViewPageState extends State<SliverAppBarListViewPage> {
   static const TAG = 'SliverAppBarListViewPage';
-  ListViewDataSource dataSource;
+  late ListViewDataSource dataSource;
   @override
   void initState() {
     super.initState();
