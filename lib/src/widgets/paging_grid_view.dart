@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:fl_paging/src/datasource/data_source.dart';
 import 'package:fl_paging/src/widgets/builder.dart';
+import 'package:fl_paging/src/widgets/default/empty_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
@@ -11,11 +12,11 @@ import 'default/load_more_widget.dart';
 import 'default/paging_default_loading.dart';
 import 'paging_state.dart';
 
-class GridView<T> extends BaseWidget<T> {
+class PagingGridView<T> extends BaseWidget<T> {
   static const ROUTE_NAME = 'GridView';
   final widgets.EdgeInsets? padding;
   final SliverGridDelegate delegate;
-  GridView(
+  PagingGridView(
       {Key? key,
       this.padding,
       required this.delegate,
@@ -35,7 +36,7 @@ class GridView<T> extends BaseWidget<T> {
   GridViewState<T> createState() => GridViewState<T>();
 }
 
-class GridViewState<T> extends State<GridView<T>> {
+class GridViewState<T> extends State<PagingGridView<T>> {
   static const TAG = 'GridView';
 
   PagingState<T> _pagingState = PagingState.loading();
@@ -110,7 +111,7 @@ class GridViewState<T> extends State<GridView<T>> {
   }
 
   @override
-  void didUpdateWidget(GridView<T> oldWidget) {
+  void didUpdateWidget(PagingGridView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.delegate is SliverGridDelegateWithFixedCrossAxisCount
         && oldWidget.delegate is SliverGridDelegateWithFixedCrossAxisCount) {
@@ -130,7 +131,7 @@ class GridViewState<T> extends State<GridView<T>> {
         if (widget.emptyBuilder != null) {
           return widget.emptyBuilder!(context);
         } else {
-          return Container();
+          return EmptyWidget();
         }
       } else {
         Widget child = widgets.SliverGrid(

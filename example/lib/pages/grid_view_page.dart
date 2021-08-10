@@ -29,7 +29,7 @@ class _GridViewPageState extends State<GridViewPage> {
         centerTitle: true,
         title: Text('Demo GridView'),
       ),
-      body: paging.GridView<Note>(
+      body: paging.PagingGridView<Note>(
         emptyBuilder: (context) {
           return Container();
         },

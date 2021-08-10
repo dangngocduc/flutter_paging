@@ -1,7 +1,6 @@
-import 'dart:developer' as developer;
-
 import 'package:fl_paging/src/datasource/data_source.dart';
 import 'package:fl_paging/src/widgets/base_widget.dart';
+import 'package:fl_paging/src/widgets/default/empty_widget.dart';
 import 'package:fl_paging/src/widgets/default/paging_default_loading.dart';
 import 'package:fl_paging/src/widgets/paging_state.dart';
 import 'package:flutter/gestures.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'builder.dart';
 import 'default/load_more_widget.dart';
 
-class ListView<T> extends BaseWidget<T> {
+class PagingListView<T> extends BaseWidget<T> {
   final widgets.EdgeInsets padding;
   final IndexedWidgetBuilder? separatorBuilder;
   final Axis scrollDirection;
@@ -27,7 +26,7 @@ class ListView<T> extends BaseWidget<T> {
   final DragStartBehavior dragStartBehavior;
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
   final ValueChanged? errorWhenLoadMore;
-  ListView(
+  PagingListView(
       {Key? key,
       this.padding = EdgeInsets.zero,
       this.separatorBuilder,
@@ -59,7 +58,7 @@ class ListView<T> extends BaseWidget<T> {
   ListViewState<T> createState() => ListViewState<T>();
 }
 
-class ListViewState<T> extends State<ListView<T>> {
+class ListViewState<T> extends State<PagingListView<T>> {
   static const TAG = 'ListView';
   CancelableOperation? cancelableOperation;
   PagingState<T> _pagingState = PagingState.loading();
@@ -79,7 +78,6 @@ class ListViewState<T> extends State<ListView<T>> {
 
   void emit(PagingState<T> state) {
     if (mounted) {
-      developer.log('emit state ${state}', name: 'ListView');
       setState(() {
         _pagingState = state;
       });
@@ -92,7 +90,6 @@ class ListViewState<T> extends State<ListView<T>> {
 
 
   Future _loadPage({bool isRefresh = false}) async {
-    developer.log('_loadPage [isRefresh]: [$isRefresh]', name: TAG);
     if (cancelableOperation != null && !cancelableOperation!.isCompleted) {
       cancelableOperation!.cancel();
     }
@@ -154,6 +151,9 @@ class ListViewState<T> extends State<ListView<T>> {
   Widget build(BuildContext context) {
     return _pagingState.when((datas, isLoadMore, isEndList) {
       if (datas.length == 0) {
+        if (widget.emptyBuilder == null) {
+          return EmptyWidget();
+        }
         return widget.emptyBuilder!(context);
       } else {
         //region child
@@ -200,8 +200,10 @@ class ListViewState<T> extends State<ListView<T>> {
         );
       }
     },
-    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder!(context) : PagingDefaultLoading(),
-    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder!(context, error) :  ErrorWidget(error)
+    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder!(context)
+        : PagingDefaultLoading(),
+    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder!(context, error)
+        :  ErrorWidget(error)
     );
   }
 }

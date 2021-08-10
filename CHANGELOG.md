@@ -69,3 +69,14 @@
 
 # 2.0.0
 - support null safety
+
+# 2.0.1
+- feat: support auto detect end of list.
+- feat: support default empty for list.
+
+**BREAKING**:
+
+- refactor: rename `ListView` to `PagingListView`
+- refactor: rename `GridView` to `PagingGridView`
+- refactor: added params `pageSize` for method `loadInitial` in `PageKeyedDataSource`
+- refactor: added params `pageSize` for method `loadPageAfter` in `PageKeyedDataSource`

@@ -29,74 +29,47 @@ A Flutter package that supports pagination(load infinite) for ListView, GridView
 
 ### DataSource
 #### PageKeyedDataSource
-*Example for load with page index*
 
-1, Define Source
+To create a `PagingListView` or `PagingGridView` you will need create class which extended from `PageKeyedDataSource`.
 
-```dart
+When extended from `PageKeyedDataSource`, you will need `override` 2 methods is 'loadInitial' and 'loadPageAfter`.
+Output of those function is a Tuple2 with item1 is `List<D>` is List of data, end item2 is next page index.extended
+
+Example: if your list start with page index is 0.
+-> on loadInitial output is Tuple2([...], 1) 1 is next page when load more item.
+
+Example:
+
+```
 class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
   NoteRepository noteRepository;
-  ListViewDataSource(this.noteRepository) {
-    isEndList = false;
+
+  ListViewDataSource(this.noteRepository);
+
+  @override
+  Future<Tuple2<List<Note>, int>> loadInitial(int pageSize) async {
+    return Tuple2(await noteRepository.getNotes(0), 1);
   }
 
   @override
-  Future<Tuple2<List<Note>, int>> loadInitial() async {
-    final result = await noteRepository.getNotes(0);
-    return Tuple2(result, 0);
-  }
-
-  @override
-  Future<Tuple2<List<Note>, int>> loadPageAfter(int params) async {
-    if (params == 6) isEndList = true;
-    final result = await noteRepository.getNotes(params + 1);
-    return Tuple2(result, params + 1);
+  Future<Tuple2<List<Note>, int>> loadPageAfter(int params, int pageSize) async {
+    return Tuple2(await noteRepository.getNotes(params), params + 1);
   }
 }
 ```
-2, ListView
 
-```dart
-      ListView<Note>(
-        key: key,
-        padding: EdgeInsets.all(16),
-        itemBuilder: (context, data, child) {
-          return NoteWidget(data);
-        },
+### Display on UI
+
+To display on UI, currently you can use `PagingListView` or `PagingGridView`.
+
+Example:
+```   ListViewDataSource dataSource = ListViewDataSource(NoteRepository());
+
+      PagingListView<Note>(
+        itemBuilder: (context, data, child) => NoteWidget(data),
         pageDataSource: dataSource,
       ),
+
 ```
 
-3, GridView
-```dart
-      paging.GridView<Note>(
-        key: key,
-        padding: EdgeInsets.all(16),
-        itemBuilder: (context, data, child) {
-          return NoteGridWidget(data);
-        },
-        delegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16
-        ),
-        pageDataSource: dataSource,
-      ),
-```
-#### ItemKeyedDataSource
-Coming Soon :))
-#### OffsetDataSource
-Coming Soon :))
-#### IndexDataSource
-Coming Soon :))
-
-# Documentation
-### BaseWidget Class
-| Dart attribute        |Description   |   Default Value |
-|:----------------------|:--------------|:----------------|
-|`emptyBuilder`          | `builder for empty widget`| |
-|`loadingBuilder`          | `builder for loading widget`| |
-|`errorBuilder`          | `builder for error widget`| |
-|`itemBuilder`          | `builder for item widget`| |
-|`pageDataSource`          |`DataSource for this widget`| |
 

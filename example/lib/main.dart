@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:example/pages/list_view_page.dart';
 import 'package:example/widgets/note_widget.dart';
+import 'package:fl_paging/fl_paging.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_paging/fl_paging.dart' as paging;
 
@@ -50,7 +51,7 @@ class _ListViewPageState extends State<ListViewPage> {
         centerTitle: true,
         title: Text('Demo ListView'),
       ),
-      body: paging.ListView<Note>(
+      body: PagingListView<Note>(
         key: key,
         padding: EdgeInsets.all(16),
         itemBuilder: (context, data, child) {
