@@ -33,7 +33,8 @@ A Flutter package that supports pagination(load infinite) for ListView, GridView
 To create a `PagingListView` or `PagingGridView` you will need create class which extended from `PageKeyedDataSource`.
 
 When extended from `PageKeyedDataSource`, you will need `override` 2 methods is 'loadInitial' and 'loadPageAfter`.
-Output of those function is a Tuple2 with item1 is `List<D>` is List of data, end item2 is next page index.extended
+
+Output of those function is a Tuple2 with item1 is List<D> is List of data, end item2 is next page index.
 
 Example: if your list start with page index is 0.
 -> on loadInitial output is Tuple2([...], 1) 1 is next page when load more item.
@@ -63,7 +64,8 @@ class ListViewDataSource extends paging.PageKeyedDataSource<int, Note> {
 To display on UI, currently you can use `PagingListView` or `PagingGridView`.
 
 Example:
-```   ListViewDataSource dataSource = ListViewDataSource(NoteRepository());
+```
+      ListViewDataSource dataSource = ListViewDataSource(NoteRepository());
 
       PagingListView<Note>(
         itemBuilder: (context, data, child) => NoteWidget(data),
