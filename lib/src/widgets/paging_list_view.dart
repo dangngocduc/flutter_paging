@@ -3,10 +3,12 @@ import 'package:fl_paging/src/widgets/base_widget.dart';
 import 'package:fl_paging/src/widgets/default/empty_widget.dart';
 import 'package:fl_paging/src/widgets/default/paging_default_loading.dart';
 import 'package:fl_paging/src/widgets/paging_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
 import 'package:flutter/widgets.dart' as widgets;
+import 'package:pull_to_refresh/pull_to_refresh.dart' as libPullToRefresh;
 import 'builder.dart';
 import 'default/load_more_widget.dart';
 
@@ -22,6 +24,12 @@ class PagingListView<T> extends BaseWidget<T> {
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
   final bool addSemanticIndexes;
+  final bool isEnablePullToRefresh;
+  final bool materialRefreshIndicator;
+  ///work only when materialRefreshIndicator = true
+  final libPullToRefresh.CustomHeader? cupertinoCustomHeader;
+  ///work only when materialRefreshIndicator = true
+  final libPullToRefresh.CustomFooter? cupertinoCustomFooter;
   final double? cacheExtent;
   final DragStartBehavior dragStartBehavior;
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
@@ -39,6 +47,10 @@ class PagingListView<T> extends BaseWidget<T> {
       this.addRepaintBoundaries = true,
       this.addAutomaticKeepAlives = true,
       this.addSemanticIndexes = true,
+      this.isEnablePullToRefresh = true,
+      this.materialRefreshIndicator = true,
+        this.cupertinoCustomHeader,
+        this.cupertinoCustomFooter,
       this.cacheExtent,
       this.dragStartBehavior = DragStartBehavior.start,
       this.errorWhenLoadMore,
@@ -62,8 +74,10 @@ class ListViewState<T> extends State<PagingListView<T>> {
   static const TAG = 'ListView';
   CancelableOperation? cancelableOperation;
   PagingState<T> _pagingState = PagingState.loading();
-  PagingState<T> get pagingState => _pagingState;
+  ScrollController scrollController = ScrollController();
+  libPullToRefresh.RefreshController _refreshController = libPullToRefresh.RefreshController(initialRefresh: false);
 
+  PagingState<T> get pagingState => _pagingState;
   List<T> getData() {
     return _pagingState.maybeWhen(
             (datas, isLoadMore, isEndList) => datas,
@@ -150,6 +164,9 @@ class ListViewState<T> extends State<PagingListView<T>> {
   @override
   Widget build(BuildContext context) {
     return _pagingState.when((datas, isLoadMore, isEndList) {
+      if(!isLoadMore){
+        _refreshController.loadComplete();
+      }
       if (datas.length == 0) {
         if (widget.emptyBuilder == null) {
           return EmptyWidget();
@@ -158,52 +175,108 @@ class ListViewState<T> extends State<PagingListView<T>> {
       } else {
         //region child
         Widget child = widgets.ListView.separated(
-          padding: widget.padding,
-          cacheExtent: widget.cacheExtent,
-          scrollDirection: widget.scrollDirection,
-          reverse: widget.reverse,
-          primary: widget.primary,
-          physics: widget.physics,
-          controller: widget.controller,
-          addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-          addRepaintBoundaries: widget.addRepaintBoundaries,
-          addSemanticIndexes: widget.addSemanticIndexes,
-          dragStartBehavior: widget.dragStartBehavior,
-          shrinkWrap: widget.shrinkWrap,
-          keyboardDismissBehavior: widget.keyboardDismissBehavior,
-          separatorBuilder: (context, index) {
-            return widget.separatorBuilder != null ? widget.separatorBuilder!(context, index) : const SizedBox(height: 16,);
-          },
-          itemBuilder: (context, index) {
-            return index == datas.length ? LoadMoreWidget() : widget.itemBuilder(context, datas[index], index);
-          },
-          itemCount: !isEndList ? datas.length + 1 : datas.length,
-        );
-        //endregion
-        return RefreshIndicator(
-          child: NotificationListener<ScrollNotification>(
-            child: child,
-            onNotification: (notification) {
-              if (!isEndList && notification is ScrollEndNotification
-                  && (notification.metrics.pixels == notification.metrics.maxScrollExtent)) {
-                  if (_pagingState is PagingStateData<T> && (!isEndList && !isLoadMore)) {
-                    _loadPage();
-                    emit((_pagingState as PagingStateData<T>).copyWith(isLoadMore: true));
-                  }
-              }
-              return false;
+            padding: widget.padding,
+            cacheExtent: widget.cacheExtent,
+            scrollDirection: widget.scrollDirection,
+            reverse: widget.reverse,
+            primary: widget.primary,
+            physics: widget.physics,
+            controller: widget.controller,
+            addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+            addRepaintBoundaries: widget.addRepaintBoundaries,
+            addSemanticIndexes: widget.addSemanticIndexes,
+            dragStartBehavior: widget.dragStartBehavior,
+            shrinkWrap: widget.shrinkWrap,
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
+            separatorBuilder: (context, index) {
+              return widget.separatorBuilder != null
+                  ? widget.separatorBuilder!(context, index)
+                  : const SizedBox(
+                      height: 16,
+                    );
             },
-          ),
-          onRefresh: () {
-            return _loadPage(isRefresh: true);
-          },
-        );
+            itemBuilder: (context, index) {
+              Widget temp = widget.materialRefreshIndicator ? LoadMoreWidget() : Container();
+              return index == datas.length
+                  ? temp
+                  : widget.itemBuilder(context, datas[index], index);
+            },
+            itemCount: !isEndList ? datas.length + 1 : datas.length,
+          );
+        //endregion
+        if (!widget.isEnablePullToRefresh){
+          return child;
+        }else{
+          //endregion
+          if(widget.materialRefreshIndicator){
+            return RefreshIndicator(
+              child: NotificationListener<ScrollNotification>(
+                child: child,
+                onNotification: (notification) {
+                  if (!isEndList &&
+                      notification is ScrollEndNotification &&
+                      (notification.metrics.pixels ==
+                          notification.metrics.maxScrollExtent)) {
+                    if (_pagingState is PagingStateData<T> &&
+                        (!isEndList && !isLoadMore)) {
+                      _loadPage();
+                      emit((_pagingState as PagingStateData<T>)
+                          .copyWith(isLoadMore: true));
+                    }
+                  }
+                  return false;
+                },
+              ),
+              onRefresh: () {
+                return _loadPage(isRefresh: true);
+              },
+            );
+          }else{
+            return libPullToRefresh.SmartRefresher(
+              enablePullDown: true,
+              enablePullUp: true,
+              header: widget.cupertinoCustomHeader ?? libPullToRefresh.CustomHeader(
+                builder: (context, status){
+                  if(status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.canRefresh){
+                    return CupertinoActivityIndicator();
+                  }else{
+                    return Container();
+                  }
+                },
+              ),
+              footer:widget.cupertinoCustomFooter ?? libPullToRefresh.CustomFooter(builder: (context, status){
+                if(status == libPullToRefresh.LoadStatus.loading){
+                  return CupertinoActivityIndicator();
+                }else{
+                  return Container();
+                }
+
+              }),
+              onRefresh: cupertinoRefresh,
+              onLoading: cupertinoLoadMore,
+              controller: _refreshController,
+              child: child,
+            );
+          }
+
+        }
+
       }
     },
-    loading: () => (widget.loadingBuilder != null) ? widget.loadingBuilder!(context)
-        : PagingDefaultLoading(),
-    error: (error)  => widget.errorBuilder != null ?  widget.errorBuilder!(context, error)
-        :  ErrorWidget(error)
-    );
+        loading: () => (widget.loadingBuilder != null)
+            ? widget.loadingBuilder!(context)
+            : PagingDefaultLoading(),
+        error: (error) => widget.errorBuilder != null
+            ? widget.errorBuilder!(context, error)
+            : ErrorWidget(error));
+  }
+
+
+  cupertinoRefresh() {
+    _loadPage(isRefresh: true).then((value) => _refreshController.refreshCompleted());
+  }
+
+  cupertinoLoadMore(){
+    _loadPage();
   }
 }

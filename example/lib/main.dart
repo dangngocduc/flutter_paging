@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:example/pages/list_view_page.dart';
 import 'package:example/widgets/note_widget.dart';
 import 'package:fl_paging/fl_paging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_paging/fl_paging.dart' as paging;
 
@@ -54,6 +55,24 @@ class _ListViewPageState extends State<ListViewPage> {
       body: PagingListView<Note>(
         key: key,
         padding: EdgeInsets.all(16),
+        materialRefreshIndicator: true,
+        cupertinoCustomHeader: CustomHeader(
+          builder: (context, status){
+            if(status == RefreshStatus.refreshing || status == RefreshStatus.canRefresh){
+              return CupertinoActivityIndicator();
+            }else{
+              return Container();
+            }
+          },
+        ),
+        cupertinoCustomFooter: CustomFooter(builder: (context, status){
+          if(status == LoadStatus.loading){
+            return CupertinoActivityIndicator();
+          }else{
+            return Container();
+          }
+
+        }),
         itemBuilder: (context, data, child) {
           return NoteWidget(data);
         },
