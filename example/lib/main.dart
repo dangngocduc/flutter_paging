@@ -55,14 +55,14 @@ class _ListViewPageState extends State<ListViewPage> {
       body: PagingListView<Note>(
         key: key,
         padding: EdgeInsets.all(16),
-        materialRefreshIndicator: true,
+        materialRefreshIndicator: false,
         cupertinoCustomHeader: CustomHeader(
+          refreshStyle: RefreshStyle.Follow,
           builder: (context, status){
             if(status == RefreshStatus.refreshing || status == RefreshStatus.canRefresh){
               return CupertinoActivityIndicator();
-            }else{
-              return Container();
             }
+            return Container();
           },
         ),
         cupertinoCustomFooter: CustomFooter(builder: (context, status){

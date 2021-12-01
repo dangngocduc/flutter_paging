@@ -234,7 +234,7 @@ class ListViewState<T> extends State<PagingListView<T>> {
           }else{
             return libPullToRefresh.SmartRefresher(
               enablePullDown: true,
-              enablePullUp: true,
+              enablePullUp: !widget.pageDataSource.isEndList,
               header: widget.cupertinoCustomHeader ?? libPullToRefresh.CustomHeader(
                 builder: (context, status){
                   if(status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.canRefresh){
@@ -277,6 +277,10 @@ class ListViewState<T> extends State<PagingListView<T>> {
   }
 
   cupertinoLoadMore(){
-    _loadPage();
+    if(!widget.pageDataSource.isEndList){
+      _loadPage();
+    }else{
+      _refreshController.loadComplete();
+    }
   }
 }
