@@ -258,15 +258,14 @@ class ListViewState<T> extends State<PagingListView<T>> with TickerProviderState
                 height: 40,
                 refreshStyle: libPullToRefresh.RefreshStyle.Follow,
                 onOffsetChange: (offset) {
-                  developer.log("value: _refreshController.headerMode!.value: ${_refreshController.headerMode!.value}", name:'tz');
                   if (_refreshController.headerMode!.value != libPullToRefresh.RefreshStatus.refreshing){
                     _scaleController.value = offset / 80.0;
-                  }
-                  if(_refreshController.headerMode!.value == libPullToRefresh.RefreshStatus.refreshing){
-                    _scaleController.value = 1;
+                  }else{
+                    _scaleController.value = 1.0;
                   }
                 },
                 builder: (context, status){
+                        developer.log("value: _scaleController: ${_scaleController.value}", name:'tz');
                         if (status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.completed) {
                           return Container(
                             margin: EdgeInsets.only(top: 30),
