@@ -25,6 +25,7 @@ class PagingListView<T> extends BaseWidget<T> {
   final StylePullToRefresh stylePullToRefresh;
   final ScrollController? controller;
   final bool? primary;
+  ///in Android pull to refresh only work when physics =  BouncingScrollPhysics()
   final ScrollPhysics? physics;
   final bool shrinkWrap;
   final bool addAutomaticKeepAlives;
@@ -233,30 +234,51 @@ class ListViewState<T> extends State<PagingListView<T>> {
                 return _loadPage(isRefresh: true);
               },
             );
-          } else {
+          }
+          else {
             Widget childListUpdate = SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   //TODO SUPPORT separatorBuilder
+                  if(index.isOdd){
+                    return widget.separatorBuilder != null
+                        ? widget.separatorBuilder!(context, index)
+                        : const SizedBox(height: 16,);
+                  }
                   return index == datas.length
                       ? LoadMoreWidget()
                       : widget.itemBuilder(context, datas[index], index);
                 },
+                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                addRepaintBoundaries: widget.addRepaintBoundaries,
+                addSemanticIndexes: widget.addSemanticIndexes,
                 childCount: !isEndList ? datas.length + 1 : datas.length,
               ),
             );
             return NotificationListener<ScrollNotification>(
-              child: CustomScrollView(
-                slivers: [
-                  CupertinoSliverRefreshControl(
-                    refreshTriggerPullDistance: 100.0,
-                    refreshIndicatorExtent: 60.0,
-                    onRefresh: () async {
-                      return _loadPage(isRefresh: true);
-                    },
-                  ),
-                  childListUpdate
-                ],
+              child: Padding(
+                padding: widget.padding,
+                child: CustomScrollView(
+                  shrinkWrap: widget.shrinkWrap,
+                  physics:widget.physics ?? BouncingScrollPhysics(),
+                  cacheExtent: widget.cacheExtent,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  primary: widget.primary,
+                  controller: widget.controller,
+                  dragStartBehavior: widget.dragStartBehavior,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  slivers: [
+                    CupertinoSliverRefreshControl(
+                      refreshTriggerPullDistance: 100.0,
+                      refreshIndicatorExtent: 60.0,
+                      onRefresh: () async {
+                        return _loadPage(isRefresh: true);
+                      },
+                    ),
+                    childListUpdate
+                  ],
+                ),
               ),
               onNotification: (notification) {
                 if (!isEndList &&
