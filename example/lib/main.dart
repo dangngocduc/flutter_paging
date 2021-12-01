@@ -56,23 +56,23 @@ class _ListViewPageState extends State<ListViewPage> {
         key: key,
         padding: EdgeInsets.all(16),
         materialRefreshIndicator: false,
-        cupertinoCustomHeader: CustomHeader(
-          refreshStyle: RefreshStyle.Follow,
-          builder: (context, status){
-            if(status == RefreshStatus.refreshing || status == RefreshStatus.canRefresh){
-              return CupertinoActivityIndicator();
-            }
-            return Container();
-          },
-        ),
-        cupertinoCustomFooter: CustomFooter(builder: (context, status){
-          if(status == LoadStatus.loading){
-            return CupertinoActivityIndicator();
-          }else{
-            return Container();
-          }
-
-        }),
+        // cupertinoCustomHeader: CustomHeader(
+        //   refreshStyle: RefreshStyle.Follow,
+        //   builder: (context, status){
+        //     if(status == RefreshStatus.refreshing || status == RefreshStatus.canRefresh){
+        //       return CupertinoActivityIndicator();
+        //     }
+        //     return Container();
+        //   },
+        // ),
+        // cupertinoCustomFooter: CustomFooter(builder: (context, status){
+        //   if(status == LoadStatus.loading){
+        //     return CupertinoActivityIndicator();
+        //   }else{
+        //     return Container();
+        //   }
+        //
+        // }),
         itemBuilder: (context, data, child) {
           return NoteWidget(data);
         },

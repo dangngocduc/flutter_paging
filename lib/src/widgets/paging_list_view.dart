@@ -11,7 +11,7 @@ import 'package:flutter/widgets.dart' as widgets;
 import 'package:pull_to_refresh/pull_to_refresh.dart' as libPullToRefresh;
 import 'builder.dart';
 import 'default/load_more_widget.dart';
-
+import 'dart:developer' as developer;
 class PagingListView<T> extends BaseWidget<T> {
   final widgets.EdgeInsets padding;
   final IndexedWidgetBuilder? separatorBuilder;
@@ -70,12 +70,14 @@ class PagingListView<T> extends BaseWidget<T> {
   ListViewState<T> createState() => ListViewState<T>();
 }
 
-class ListViewState<T> extends State<PagingListView<T>> {
+class ListViewState<T> extends State<PagingListView<T>> with TickerProviderStateMixin{
   static const TAG = 'ListView';
   CancelableOperation? cancelableOperation;
   PagingState<T> _pagingState = PagingState.loading();
   ScrollController scrollController = ScrollController();
   libPullToRefresh.RefreshController _refreshController = libPullToRefresh.RefreshController(initialRefresh: false);
+  late AnimationController _scaleController;
+  late AnimationController _footerController;
 
   PagingState<T> get pagingState => _pagingState;
   List<T> getData() {
@@ -87,6 +89,9 @@ class ListViewState<T> extends State<PagingListView<T>> {
   @override
   void dispose() {
     cancelableOperation?.cancel();
+    _refreshController.dispose();
+    _scaleController.dispose();
+    _footerController.dispose();
     super.dispose();
   }
 
@@ -155,9 +160,23 @@ class ListViewState<T> extends State<PagingListView<T>> {
     }
   }
 
+  void initController(){
+    _scaleController =
+        AnimationController(value: 0.0, vsync: this, upperBound: 1.0);
+    _footerController = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 2000));
+    _refreshController.headerMode!.addListener(() {
+      if (_refreshController.headerStatus == libPullToRefresh.RefreshStatus.idle) {
+        _scaleController.value = 0.0;
+      }
+    });
+
+  }
+
   @override
   void initState() {
     super.initState();
+    initController();
     _loadPage();
   }
 
@@ -236,21 +255,42 @@ class ListViewState<T> extends State<PagingListView<T>> {
               enablePullDown: true,
               enablePullUp: !widget.pageDataSource.isEndList,
               header: widget.cupertinoCustomHeader ?? libPullToRefresh.CustomHeader(
-                builder: (context, status){
-                  if(status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.canRefresh){
-                    return CupertinoActivityIndicator();
-                  }else{
-                    return Container();
-                  }
+                refreshStyle: libPullToRefresh.RefreshStyle.Follow,
+                onOffsetChange: (offset) {
+                  if (_refreshController.headerMode!.value != libPullToRefresh.RefreshStatus.refreshing)
+                    _scaleController.value = offset / 80.0;
                 },
-              ),
+                builder: (context, status){
+
+                        if (status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.completed) {
+                          return Container(
+                            child: FadeTransition(
+                              opacity: _scaleController,
+                              child: ScaleTransition(
+                                child: CupertinoActivityIndicator(),
+                                scale: _scaleController,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                          );
+                        }
+                        return Container(
+                          child: FadeTransition(
+                            opacity: _scaleController,
+                            child: ScaleTransition(
+                              child: CupertinoActivityIndicator(animating: false, radius: 12,),
+                              scale: _scaleController,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                        );
+                      }),
               footer:widget.cupertinoCustomFooter ?? libPullToRefresh.CustomFooter(builder: (context, status){
                 if(status == libPullToRefresh.LoadStatus.loading){
-                  return CupertinoActivityIndicator();
+                  return const CupertinoActivityIndicator();
                 }else{
                   return Container();
                 }
-
               }),
               onRefresh: cupertinoRefresh,
               onLoading: cupertinoLoadMore,

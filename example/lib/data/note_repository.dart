@@ -12,7 +12,7 @@ class NoteRepository {
       datas.add(Note.fakeId(i + 20*pageIndex));
     }
     return Future.delayed(
-        Duration(milliseconds: 500),
+        Duration(milliseconds: 2000),
         () => datas
     );
   }
