@@ -4,7 +4,6 @@ import 'package:example/pages/list_view_page.dart';
 import 'package:example/widgets/note_widget.dart';
 import 'package:fl_paging/fl_paging.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_paging/fl_paging.dart' as paging;
 
 import 'data/models/note.dart';
 import 'data/note_repository.dart';
@@ -43,6 +42,7 @@ class _ListViewPageState extends State<ListViewPage> {
     super.initState();
     dataSource = ListViewDataSource(NoteRepository());
   }
+
   @override
   Widget build(BuildContext context) {
     developer.log('build', name: 'ListViewPage');
@@ -51,8 +51,15 @@ class _ListViewPageState extends State<ListViewPage> {
         centerTitle: true,
         title: Text('Demo ListView'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {});
+        },
+        child: Icon(Icons.refresh),
+      ),
       body: PagingListView<Note>(
         key: key,
+        stylePullToRefresh: StylePullToRefresh.IOS,
         padding: EdgeInsets.all(16),
         itemBuilder: (context, data, child) {
           return NoteWidget(data);
@@ -62,4 +69,3 @@ class _ListViewPageState extends State<ListViewPage> {
     );
   }
 }
-

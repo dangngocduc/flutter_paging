@@ -16,10 +16,13 @@ class PagingGridView<T> extends BaseWidget<T> {
   static const ROUTE_NAME = 'GridView';
   final widgets.EdgeInsets? padding;
   final SliverGridDelegate delegate;
+  final bool isEnablePullToRefresh;
+
   PagingGridView(
       {Key? key,
       this.padding,
       required this.delegate,
+        this.isEnablePullToRefresh = true,
         required ValueIndexWidgetBuilder<T> itemBuilder,
         WidgetBuilder? emptyBuilder,
         WidgetBuilder? loadingBuilder,
@@ -140,42 +143,45 @@ class GridViewState<T> extends State<PagingGridView<T>> {
             return widget.itemBuilder(context, datas[index], index);
           }, childCount: datas.length),
         );
-        return RefreshIndicator(
-          child: NotificationListener<ScrollNotification>(
-            child: CustomScrollView(
-              slivers: [
-                widgets.SliverPadding(
-                  padding: widget.padding ?? EdgeInsets.zero,
-                  sliver: child,
-                ),
-                if (!isEndList)
-                  SliverToBoxAdapter(
-                    child: LoadMoreWidget(),
-                  )
-              ],
-            ),
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification) {
-                if (notification.metrics.pixels ==
-                    notification.metrics.maxScrollExtent) {
-                  if (isEndList) return false;
-                  if (_pagingState is PagingStateData) {
-                    if (!isEndList && !isLoadMore) {
-                      _loadPage();
-                      setState(() {
-                        _pagingState = (_pagingState as PagingStateData<T>)
-                            .copyWith
-                            .call(isLoadMore: true);
-                      });
-                    }
+        final body = NotificationListener<ScrollNotification>(
+          child: CustomScrollView(
+            slivers: [
+              widgets.SliverPadding(
+                padding: widget.padding ?? EdgeInsets.zero,
+                sliver: child,
+              ),
+              if (!isEndList)
+                SliverToBoxAdapter(
+                  child: LoadMoreWidget(),
+                )
+            ],
+          ),
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification) {
+              if (notification.metrics.pixels ==
+                  notification.metrics.maxScrollExtent) {
+                if (isEndList) return false;
+                if (_pagingState is PagingStateData) {
+                  if (!isEndList && !isLoadMore) {
+                    _loadPage();
+                    setState(() {
+                      _pagingState = (_pagingState as PagingStateData<T>)
+                          .copyWith
+                          .call(isLoadMore: true);
+                    });
                   }
                 }
-              } else if (notification is ScrollUpdateNotification) {
-                //To show floating
               }
-              return false;
-            },
-          ),
+            } else if (notification is ScrollUpdateNotification) {
+              //To show floating
+            }
+            return false;
+          },
+        );
+        if (!widget.isEnablePullToRefresh)
+          return body;
+        return RefreshIndicator(
+          child: body,
           onRefresh: () {
             return _loadPage(isRefresh: true);
           },

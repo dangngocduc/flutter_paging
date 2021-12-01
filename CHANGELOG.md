@@ -80,3 +80,7 @@
 - refactor: rename `GridView` to `PagingGridView`
 - refactor: added params `pageSize` for method `loadInitial` in `PageKeyedDataSource`
 - refactor: added params `pageSize` for method `loadPageAfter` in `PageKeyedDataSource`
+
+
+# 2.0.2
+- feat: support enable pull to refresh

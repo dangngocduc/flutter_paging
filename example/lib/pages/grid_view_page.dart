@@ -21,6 +21,7 @@ class _GridViewPageState extends State<GridViewPage> {
     super.initState();
     dataSource = ListViewDataSource(NoteRepository());
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
