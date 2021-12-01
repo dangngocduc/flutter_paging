@@ -265,7 +265,6 @@ class ListViewState<T> extends State<PagingListView<T>> with TickerProviderState
                   }
                 },
                 builder: (context, status){
-                        developer.log("value: _scaleController: ${_scaleController.value}", name:'tz');
                         if (status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.completed) {
                           return Container(
                             margin: EdgeInsets.only(top: 30),
