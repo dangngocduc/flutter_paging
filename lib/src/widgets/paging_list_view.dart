@@ -258,8 +258,13 @@ class ListViewState<T> extends State<PagingListView<T>> with TickerProviderState
                 height: 40,
                 refreshStyle: libPullToRefresh.RefreshStyle.Follow,
                 onOffsetChange: (offset) {
-                  if (_refreshController.headerMode!.value != libPullToRefresh.RefreshStatus.refreshing)
+                  developer.log("value: _refreshController.headerMode!.value: ${_refreshController.headerMode!.value}", name:'tz');
+                  if (_refreshController.headerMode!.value != libPullToRefresh.RefreshStatus.refreshing){
                     _scaleController.value = offset / 80.0;
+                  }
+                  if(_refreshController.headerMode!.value == libPullToRefresh.RefreshStatus.refreshing){
+                    _scaleController.value = 1;
+                  }
                 },
                 builder: (context, status){
                         if (status == libPullToRefresh.RefreshStatus.refreshing || status == libPullToRefresh.RefreshStatus.completed) {
@@ -267,10 +272,7 @@ class ListViewState<T> extends State<PagingListView<T>> with TickerProviderState
                             margin: EdgeInsets.only(top: 30),
                             child: FadeTransition(
                               opacity: _scaleController,
-                              child: ScaleTransition(
-                                child: CupertinoActivityIndicator(),
-                                scale: _scaleController,
-                              ),
+                              child: CupertinoActivityIndicator(),
                             ),
                             alignment: Alignment.center,
                           );
