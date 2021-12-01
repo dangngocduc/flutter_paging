@@ -239,20 +239,26 @@ class ListViewState<T> extends State<PagingListView<T>> {
             Widget childListUpdate = SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  //TODO SUPPORT separatorBuilder
-                  if(index.isOdd){
-                    return widget.separatorBuilder != null
-                        ? widget.separatorBuilder!(context, index)
-                        : const SizedBox(height: 16,);
+                  final int itemIndex = index ~/ 2;
+                  if (index.isEven) {
+                    return itemIndex == datas.length
+                        ? LoadMoreWidget()
+                        : widget.itemBuilder(context, datas[itemIndex], itemIndex);
                   }
-                  return index == datas.length
-                      ? LoadMoreWidget()
-                      : widget.itemBuilder(context, datas[index], index);
+                  return widget.separatorBuilder != null
+                      ? widget.separatorBuilder!(context, itemIndex)
+                      : const SizedBox(height: 16,);
+                },
+                semanticIndexCallback: (Widget widget, int localIndex) {
+                  if (localIndex.isEven) {
+                    return localIndex ~/ 2;
+                  }
+                  return null;
                 },
                 addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                 addRepaintBoundaries: widget.addRepaintBoundaries,
                 addSemanticIndexes: widget.addSemanticIndexes,
-                childCount: !isEndList ? datas.length + 1 : datas.length,
+                childCount: !isEndList ?  datas.length * 2 + 2 : datas.length * 2,
               ),
             );
             return NotificationListener<ScrollNotification>(
