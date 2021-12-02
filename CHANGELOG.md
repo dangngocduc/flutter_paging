@@ -84,3 +84,6 @@
 
 # 2.0.2
 - feat: support enable pull to refresh
+
+# 2.1.0
+- feat: support style for pull to refresh (Material|Cupertino)
