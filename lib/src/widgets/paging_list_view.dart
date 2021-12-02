@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:fl_paging/src/datasource/data_source.dart';
@@ -25,8 +26,13 @@ class PagingListView<T> extends BaseWidget<T> {
   final StylePullToRefresh stylePullToRefresh;
   final ScrollController? controller;
   final bool? primary;
-  ///in Android pull to refresh only work when physics =  BouncingScrollPhysics()
+
+  ///In Android pull to refresh only work
+  /// if total height height  < height of screen => physics = [AlwaysScrollableScrollPhysics]
+  /// if total height of item > height of screen => physics = [BouncingScrollPhysics] || [AlwaysScrollableScrollPhysics]
+  /// default physics = [AlwaysScrollableScrollPhysics]
   final ScrollPhysics? physics;
+
   final bool shrinkWrap;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
@@ -236,54 +242,62 @@ class ListViewState<T> extends State<PagingListView<T>> {
             );
           }
           else {
-            Widget childListUpdate = SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final int itemIndex = index ~/ 2;
-                  if (index.isEven) {
-                    return itemIndex == datas.length
-                        ? LoadMoreWidget()
-                        : widget.itemBuilder(context, datas[itemIndex], itemIndex);
-                  }
-                  return widget.separatorBuilder != null
-                      ? widget.separatorBuilder!(context, itemIndex)
-                      : const SizedBox(height: 16,);
-                },
-                semanticIndexCallback: (Widget widget, int localIndex) {
-                  if (localIndex.isEven) {
-                    return localIndex ~/ 2;
-                  }
-                  return null;
-                },
-                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                addRepaintBoundaries: widget.addRepaintBoundaries,
-                addSemanticIndexes: widget.addSemanticIndexes,
-                childCount: !isEndList ?  datas.length * 2 + 2 : datas.length * 2,
+
+            Widget childListUpdate = SliverSafeArea(
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    final int itemIndex = index ~/ 2;
+                    if (index.isEven) {
+                      return itemIndex == datas.length
+                          ? LoadMoreWidget()
+                          : widget.itemBuilder(context, datas[itemIndex], itemIndex);
+                    }
+                    return widget.separatorBuilder != null
+                        ? widget.separatorBuilder!(context, itemIndex)
+                        : const SizedBox(height: 16,);
+                  },
+                  semanticIndexCallback: (Widget widget, int localIndex) {
+                    if (localIndex.isEven) {
+                      return localIndex ~/ 2;
+                    }
+                    return null;
+                  },
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  childCount: !isEndList ?  datas.length * 2 + 2 : datas.length * 2,
+                ),
               ),
             );
+
+            // ScrollPhysics physics = Platform.isIOS ? AlwaysScrollableScrollPhysics() : BouncingScrollPhysics();
             return NotificationListener<ScrollNotification>(
               child: Padding(
                 padding: widget.padding,
-                child: CustomScrollView(
-                  shrinkWrap: widget.shrinkWrap,
-                  physics:widget.physics ?? BouncingScrollPhysics(),
-                  cacheExtent: widget.cacheExtent,
-                  scrollDirection: widget.scrollDirection,
-                  reverse: widget.reverse,
-                  primary: widget.primary,
-                  controller: widget.controller,
-                  dragStartBehavior: widget.dragStartBehavior,
-                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
-                  slivers: [
-                    CupertinoSliverRefreshControl(
-                      refreshTriggerPullDistance: 100.0,
-                      refreshIndicatorExtent: 60.0,
-                      onRefresh: () async {
-                        return _loadPage(isRefresh: true);
-                      },
-                    ),
-                    childListUpdate
-                  ],
+                child: ScrollConfiguration(
+                  behavior: CupertinoScrollBehavior(),
+                  child: CustomScrollView(
+                    shrinkWrap: widget.shrinkWrap,
+                    physics:widget.physics ?? AlwaysScrollableScrollPhysics(),
+                    cacheExtent: widget.cacheExtent,
+                    scrollDirection: widget.scrollDirection,
+                    reverse: widget.reverse,
+                    primary: widget.primary,
+                    controller: widget.controller,
+                    dragStartBehavior: widget.dragStartBehavior,
+                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                    slivers: [
+                      CupertinoSliverRefreshControl(
+                        refreshTriggerPullDistance: 100.0,
+                        refreshIndicatorExtent: 60.0,
+                        onRefresh: () async {
+                          return _loadPage(isRefresh: true);
+                        },
+                      ),
+                      childListUpdate
+                    ],
+                  ),
                 ),
               ),
               onNotification: (notification) {
