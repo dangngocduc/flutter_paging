@@ -87,3 +87,6 @@
 
 # 2.1.0
 - feat: support style for pull to refresh (Material|Cupertino)
+
+# 2.1.1
+- fix: issue pull to refresh with short list.
