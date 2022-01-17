@@ -101,6 +101,10 @@ class ListViewState<T> extends State<PagingListView<T>> {
     }
   }
 
+  void refresh() {
+    _loadPage(isRefresh: true);
+  }
+
   void retry() {
     _loadPage(isRefresh: false);
   }
