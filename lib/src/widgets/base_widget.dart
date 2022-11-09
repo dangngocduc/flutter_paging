@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'builder.dart';
 
-typedef ValueIndexWidgetBuilder<T> = Widget Function(BuildContext context, T value, int index);
+typedef ValueIndexWidgetBuilder<T> = Widget Function(
+    BuildContext context, T value, int index);
 
 abstract class BaseWidget<T> extends StatefulWidget {
   /// Signature for a function that creates a widget empty
@@ -21,11 +22,14 @@ abstract class BaseWidget<T> extends StatefulWidget {
   /// DataSource for current ScrollView [ListView - GridView]
   final DataSource<T> pageDataSource;
 
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
+
   BaseWidget(
       {Key? key,
       this.emptyBuilder,
       this.loadingBuilder,
       this.errorBuilder,
+      this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
       required this.itemBuilder,
       required this.pageDataSource})
       : super(key: key);

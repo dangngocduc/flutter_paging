@@ -44,6 +44,7 @@ class _SliverAppBarListViewPageState extends State<SliverAppBarListViewPage> {
           },
           body: paging.PagingListView<Note>(
             padding: EdgeInsets.all(16),
+
             itemBuilder: (context, data, child) {
               return NoteWidget(data);
             },

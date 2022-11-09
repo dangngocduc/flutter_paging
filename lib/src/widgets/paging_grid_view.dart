@@ -22,18 +22,22 @@ class PagingGridView<T> extends BaseWidget<T> {
       {Key? key,
       this.padding,
       required this.delegate,
-        this.isEnablePullToRefresh = true,
-        required ValueIndexWidgetBuilder<T> itemBuilder,
-        WidgetBuilder? emptyBuilder,
-        WidgetBuilder? loadingBuilder,
-        ErrorBuilder?  errorBuilder,
-        required DataSource<T> pageDataSource})
+      this.isEnablePullToRefresh = true,
+      required ValueIndexWidgetBuilder<T> itemBuilder,
+      WidgetBuilder? emptyBuilder,
+      WidgetBuilder? loadingBuilder,
+      ErrorBuilder? errorBuilder,
+      ScrollViewKeyboardDismissBehavior keyboardDismissBehavior =
+          ScrollViewKeyboardDismissBehavior.manual,
+      required DataSource<T> pageDataSource})
       : super(
             itemBuilder: itemBuilder,
-      emptyBuilder: emptyBuilder,
-      loadingBuilder: loadingBuilder,
-      errorBuilder: errorBuilder,
-      pageDataSource: pageDataSource, key: key);
+            emptyBuilder: emptyBuilder,
+            loadingBuilder: loadingBuilder,
+            errorBuilder: errorBuilder,
+            keyboardDismissBehavior: keyboardDismissBehavior,
+            pageDataSource: pageDataSource,
+            key: key);
 
   @override
   GridViewState<T> createState() => GridViewState<T>();
@@ -76,7 +80,7 @@ class GridViewState<T> extends State<PagingGridView<T>> {
           });
         });
       } else {
-        if(_pagingState is PagingStateError<T>) {
+        if (_pagingState is PagingStateError<T>) {
           setState(() {
             _pagingState = PagingState.loading();
           });
@@ -116,13 +120,13 @@ class GridViewState<T> extends State<PagingGridView<T>> {
   @override
   void didUpdateWidget(PagingGridView<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.delegate is SliverGridDelegateWithFixedCrossAxisCount
-        && oldWidget.delegate is SliverGridDelegateWithFixedCrossAxisCount) {
-      if ((widget.delegate as SliverGridDelegateWithFixedCrossAxisCount).childAspectRatio !=
-          (oldWidget.delegate as SliverGridDelegateWithFixedCrossAxisCount).childAspectRatio) {
-        setState(() {
-
-        });
+    if (widget.delegate is SliverGridDelegateWithFixedCrossAxisCount &&
+        oldWidget.delegate is SliverGridDelegateWithFixedCrossAxisCount) {
+      if ((widget.delegate as SliverGridDelegateWithFixedCrossAxisCount)
+              .childAspectRatio !=
+          (oldWidget.delegate as SliverGridDelegateWithFixedCrossAxisCount)
+              .childAspectRatio) {
+        setState(() {});
       }
     }
   }
@@ -145,6 +149,7 @@ class GridViewState<T> extends State<PagingGridView<T>> {
         );
         final body = NotificationListener<ScrollNotification>(
           child: CustomScrollView(
+            keyboardDismissBehavior: widget.keyboardDismissBehavior,
             slivers: [
               widgets.SliverPadding(
                 padding: widget.padding ?? EdgeInsets.zero,
@@ -178,8 +183,7 @@ class GridViewState<T> extends State<PagingGridView<T>> {
             return false;
           },
         );
-        if (!widget.isEnablePullToRefresh)
-          return body;
+        if (!widget.isEnablePullToRefresh) return body;
         return RefreshIndicator(
           child: body,
           onRefresh: () {
