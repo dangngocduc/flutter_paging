@@ -130,6 +130,13 @@ class GridViewState<T> extends State<PagingGridView<T>> {
       }
     }
   }
+  
+  @override
+  void setState(fn) {
+    if(mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
