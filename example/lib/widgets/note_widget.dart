@@ -11,27 +11,36 @@ class NoteWidget extends StatelessWidget {
     return Container(
       decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8))
-          ),
-        color: Theme.of(context).cardColor
-      ),
+              borderRadius: BorderRadius.all(Radius.circular(8))),
+          color: Theme.of(context).cardColor),
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       child: Row(
         children: [
           CircleAvatar(
             child: Text('${note.id}'),
           ),
-          SizedBox(width: 16,),
+          SizedBox(
+            width: 16,
+          ),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(note.title, style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                    fontWeight: FontWeight.w800
-                ),),
-                SizedBox(height: 4,),
-                Text(note.content, style: Theme.of(context).textTheme.bodyText2,)
+                Text(
+                  note.title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w800),
+                ),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(
+                  note.content,
+                  style: Theme.of(context).textTheme.labelSmall,
+                )
               ],
             ),
           )
