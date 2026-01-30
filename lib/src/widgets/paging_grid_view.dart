@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as widgets;
 
 import 'base_widget.dart';
-import 'builder.dart';
 import 'default/load_more_widget.dart';
 import 'default/paging_default_loading.dart';
 import 'paging_state.dart';
@@ -27,6 +26,7 @@ class PagingGridView<T> extends BaseWidget<T> {
       WidgetBuilder? emptyBuilder,
       WidgetBuilder? loadingBuilder,
       ErrorBuilder? errorBuilder,
+      WidgetBuilder? loadmoreBuilder,
       ScrollViewKeyboardDismissBehavior keyboardDismissBehavior =
           ScrollViewKeyboardDismissBehavior.manual,
       required DataSource<T> pageDataSource})
@@ -35,6 +35,7 @@ class PagingGridView<T> extends BaseWidget<T> {
             emptyBuilder: emptyBuilder,
             loadingBuilder: loadingBuilder,
             errorBuilder: errorBuilder,
+            loadmoreBuilder: loadmoreBuilder,
             keyboardDismissBehavior: keyboardDismissBehavior,
             pageDataSource: pageDataSource,
             key: key);
@@ -130,10 +131,10 @@ class GridViewState<T> extends State<PagingGridView<T>> {
       }
     }
   }
-  
+
   @override
   void setState(fn) {
-    if(mounted) {
+    if (mounted) {
       super.setState(fn);
     }
   }
@@ -164,7 +165,9 @@ class GridViewState<T> extends State<PagingGridView<T>> {
               ),
               if (!isEndList)
                 SliverToBoxAdapter(
-                  child: LoadMoreWidget(),
+                  child: widget.loadmoreBuilder?.call(context) ??
+                      widget.loadingBuilder?.call(context) ??
+                      LoadMoreWidget(),
                 )
             ],
           ),

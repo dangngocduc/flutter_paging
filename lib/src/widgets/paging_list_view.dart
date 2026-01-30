@@ -216,11 +216,9 @@ class ListViewState<T> extends State<PagingListView<T>> {
           },
           itemBuilder: (context, index) {
             return index == datas.length
-                ? widget.loadmoreBuilder != null
-                    ? widget.loadmoreBuilder!(context)
-                    : widget.loadingBuilder != null
-                        ? widget.loadingBuilder!(context)
-                        : LoadMoreWidget()
+                ? widget.loadmoreBuilder?.call(context) ??
+                    widget.loadingBuilder?.call(context) ??
+                    LoadMoreWidget()
                 : widget.itemBuilder(context, datas[index], index);
           },
           itemCount: !isEndList ? datas.length + 1 : datas.length,
@@ -257,7 +255,9 @@ class ListViewState<T> extends State<PagingListView<T>> {
                     final int itemIndex = index ~/ 2;
                     if (index.isEven) {
                       return itemIndex == datas.length
-                          ? LoadMoreWidget()
+                          ? widget.loadmoreBuilder?.call(context) ??
+                              widget.loadingBuilder?.call(context) ??
+                              LoadMoreWidget()
                           : widget.itemBuilder(
                               context, datas[itemIndex], itemIndex);
                     }
