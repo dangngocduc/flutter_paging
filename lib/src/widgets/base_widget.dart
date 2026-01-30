@@ -22,6 +22,9 @@ abstract class BaseWidget<T> extends StatefulWidget {
   /// DataSource for current ScrollView [ListView - GridView]
   final DataSource<T> pageDataSource;
 
+  /// Signature for a function that creates a widget for load more
+  final WidgetBuilder? loadmoreBuilder;
+
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
 
   BaseWidget(
@@ -29,6 +32,7 @@ abstract class BaseWidget<T> extends StatefulWidget {
       this.emptyBuilder,
       this.loadingBuilder,
       this.errorBuilder,
+      this.loadmoreBuilder,
       this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
       required this.itemBuilder,
       required this.pageDataSource})

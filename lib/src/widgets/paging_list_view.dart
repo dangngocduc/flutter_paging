@@ -1,5 +1,4 @@
 import 'dart:developer' as developer;
-import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:fl_paging/src/datasource/data_source.dart';
@@ -63,12 +62,14 @@ class PagingListView<T> extends BaseWidget<T> {
       required ValueIndexWidgetBuilder<T> itemBuilder,
       WidgetBuilder? emptyBuilder,
       WidgetBuilder? loadingBuilder,
+      WidgetBuilder? loadmoreBuilder,
       ErrorBuilder? errorBuilder,
       required DataSource<T> pageDataSource})
       : super(
             itemBuilder: itemBuilder,
             emptyBuilder: emptyBuilder,
             loadingBuilder: loadingBuilder,
+            loadmoreBuilder: loadmoreBuilder,
             errorBuilder: errorBuilder,
             pageDataSource: pageDataSource,
             key: key);
@@ -215,7 +216,11 @@ class ListViewState<T> extends State<PagingListView<T>> {
           },
           itemBuilder: (context, index) {
             return index == datas.length
-                ? LoadMoreWidget()
+                ? widget.loadmoreBuilder != null
+                    ? widget.loadmoreBuilder!(context)
+                    : widget.loadingBuilder != null
+                        ? widget.loadingBuilder!(context)
+                        : LoadMoreWidget()
                 : widget.itemBuilder(context, datas[index], index);
           },
           itemCount: !isEndList ? datas.length + 1 : datas.length,
@@ -244,22 +249,23 @@ class ListViewState<T> extends State<PagingListView<T>> {
                 return _loadPage(isRefresh: true);
               },
             );
-          }
-          else {
-
+          } else {
             Widget childListUpdate = SliverSafeArea(
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
-                      (context, index) {
+                  (context, index) {
                     final int itemIndex = index ~/ 2;
                     if (index.isEven) {
                       return itemIndex == datas.length
                           ? LoadMoreWidget()
-                          : widget.itemBuilder(context, datas[itemIndex], itemIndex);
+                          : widget.itemBuilder(
+                              context, datas[itemIndex], itemIndex);
                     }
                     return widget.separatorBuilder != null
                         ? widget.separatorBuilder!(context, itemIndex)
-                        : const SizedBox(height: 16,);
+                        : const SizedBox(
+                            height: 16,
+                          );
                   },
                   semanticIndexCallback: (Widget widget, int localIndex) {
                     if (localIndex.isEven) {
@@ -270,7 +276,8 @@ class ListViewState<T> extends State<PagingListView<T>> {
                   addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                   addRepaintBoundaries: widget.addRepaintBoundaries,
                   addSemanticIndexes: widget.addSemanticIndexes,
-                  childCount: !isEndList ?  datas.length * 2 + 2 : datas.length * 2,
+                  childCount:
+                      !isEndList ? datas.length * 2 + 2 : datas.length * 2,
                 ),
               ),
             );
@@ -283,7 +290,7 @@ class ListViewState<T> extends State<PagingListView<T>> {
                   behavior: CupertinoScrollBehavior(),
                   child: CustomScrollView(
                     shrinkWrap: widget.shrinkWrap,
-                    physics:widget.physics ?? AlwaysScrollableScrollPhysics(),
+                    physics: widget.physics ?? AlwaysScrollableScrollPhysics(),
                     cacheExtent: widget.cacheExtent,
                     scrollDirection: widget.scrollDirection,
                     reverse: widget.reverse,
@@ -341,7 +348,6 @@ class ListViewState<T> extends State<PagingListView<T>> {
         }
 
         //endregion
-
       }
     },
         loading: () => (widget.loadingBuilder != null)
